@@ -1,7 +1,13 @@
+/**
+ * Tracks all tasks added in this session.
+ */
 public class Task {
     private String description;
     private boolean isDone;
 
+    /**
+     * Constructs a Task object from a task description.
+     */
     public Task(String description) {
         this.description = description;
         this.isDone = false;
@@ -16,10 +22,16 @@ public class Task {
         return isDone;
     }
 
+    /**
+     * Marks this task as done.
+     */
     public void markAsDone() {
         isDone = true;
     }
 
+    /**
+     * Marks this task as not done.
+     */
     public void markAsNotDone() {
         isDone = false;
     }
