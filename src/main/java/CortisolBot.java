@@ -13,18 +13,30 @@ public class CortisolBot {
         System.out.printf("Greetings sir/madam, %s humbly at your service.\n",name);
         System.out.println("How may I serve you at this evening?");
         System.out.println("-".repeat(55));
+
+        String[] tasks = new String[100];
+        int tasksAdded = 0;
         Scanner scanner = new Scanner(System.in);
         while(true) {
             String userInput = scanner.nextLine();
             System.out.println("-".repeat(55));
-            if (userInput.equals("bye")) {
+            if (userInput.equals("list")) {
+                for (int i=0;i<tasksAdded;i++) {
+                    System.out.printf("%d. %s\n",i+1,tasks[i]);
+                }
+                System.out.println("-".repeat(55));
+            }
+            else if (userInput.equals("bye")) {
                 break;
             }
             else {
-                System.out.println(userInput);
+                tasks[tasksAdded] = userInput;
+                System.out.printf("added: %s\n", userInput);
                 System.out.println("-".repeat(55));
+                tasksAdded++;
             }
         }
         System.out.println("Tonight has been an honour. I shall bid thee farewell!");
+        System.out.println("-".repeat(55));
     }
 }
