@@ -15,22 +15,42 @@ public class CortisolBot {
         System.out.println("-".repeat(55));
 
         String[] tasks = new String[100];
+        String[] tasksStatus = new String[100];
+
         int tasksAdded = 0;
         Scanner scanner = new Scanner(System.in);
         while(true) {
             String userInput = scanner.nextLine();
             System.out.println("-".repeat(55));
             if (userInput.equals("list")) {
+                System.out.println("Here are the tasks in your list:");
                 for (int i=0;i<tasksAdded;i++) {
-                    System.out.printf("%d. %s\n",i+1,tasks[i]);
+                    System.out.printf("%d.[%s] %s\n",i+1,tasksStatus[i],tasks[i]);
                 }
                 System.out.println("-".repeat(55));
             }
             else if (userInput.equals("bye")) {
                 break;
             }
+            else if (userInput.startsWith("mark ")) {
+                String[] words = userInput.split("\\s+");
+                int taskIndex = Integer.parseInt(words[1]) - 1;
+                tasksStatus[taskIndex] = "X";
+                System.out.println("Nice! I've marked this task as done:");
+                System.out.printf("\t[%s] %s\n",tasksStatus[taskIndex],tasks[taskIndex]);
+                System.out.println("-".repeat(55));
+            }
+            else if (userInput.startsWith("unmark ")) {
+                String[] words = userInput.split("\\s+");
+                int taskIndex = Integer.parseInt(words[1]) - 1;
+                tasksStatus[taskIndex] = "";
+                System.out.println("Ok, I've marked this task as not done yet: ");
+                System.out.printf("\t[%s] %s\n",tasksStatus[taskIndex],tasks[taskIndex]);
+                System.out.println("-".repeat(55));
+            }
             else {
                 tasks[tasksAdded] = userInput;
+                tasksStatus[tasksAdded] = "";
                 System.out.printf("added: %s\n", userInput);
                 System.out.println("-".repeat(55));
                 tasksAdded++;
