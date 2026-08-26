@@ -7,5 +7,10 @@ public class CortisolBot {
                 + " \\____\\___/|_|   \\__|_|___/\\___/|_|____/ \\___/ \\__|";
         String name = "CortisolBot";
         System.out.println(banner);
+        System.out.println("-".repeat(55));
+        System.out.printf("Greetings sir/madam, %s humbly at your service.\n",name);
+        System.out.println("How may I serve you at this evening?");
+        System.out.println("-".repeat(55));
+        System.out.println("Tonight has been an honour. I shall bid thee farewell!");
     }
 }
