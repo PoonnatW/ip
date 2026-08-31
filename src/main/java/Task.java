@@ -6,14 +6,9 @@ public class Task {
     private boolean isDone;
 
     /**
-     * Constructs an empty Task object without a task description.
-     */
-    public Task() {
-        this(null);
-    }
-
-    /**
      * Constructs a Task object from a task description.
+     *
+     * @param description description of the task
      */
     public Task(String description) {
         this.description = description;
@@ -25,8 +20,22 @@ public class Task {
         return (isDone ? "[X] " : "[ ] ") + description;
     }
 
+    /**
+     * Returns whether this task is done.
+     *
+     * @return true if the task is done, false otherwise
+     */
     public boolean isDone() {
         return isDone;
+    }
+
+    /**
+     * Returns the status icon of this task.
+     *
+     * @return "[X] " if done, "[ ] " otherwise
+     */
+    protected String getStatusIcon() {
+        return isDone ? "[X] " : "[ ] ";
     }
 
     /**
@@ -43,11 +52,12 @@ public class Task {
         isDone = false;
     }
 
+    /**
+     * Returns the description of this task.
+     *
+     * @return description of the task
+     */
     public String getDescription() {
         return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 }

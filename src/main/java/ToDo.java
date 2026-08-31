@@ -1,11 +1,19 @@
+/**
+ * Represents a todo task.
+ */
 public class ToDo extends Task {
-    @Override
-    public String toString() {
-        return "[T]" + (isDone() ? "[X] " : "[ ] ") + getDescription();
+
+    /**
+     * Constructs a todo task with the given description.
+     *
+     * @param description description of the task
+     */
+    public ToDo(String description) {
+        super(description);
     }
 
-    public ToDo(String description) {
-        this.setDescription(description);
-        this.markAsNotDone();
+    @Override
+    public String toString() {
+        return "[T]" + getStatusIcon() + getDescription();
     }
 }
