@@ -6,6 +6,13 @@ public class Task {
     private boolean isDone;
 
     /**
+     * Constructs an empty Task object without a task description.
+     */
+    public Task() {
+        this(null);
+    }
+
+    /**
      * Constructs a Task object from a task description.
      */
     public Task(String description) {

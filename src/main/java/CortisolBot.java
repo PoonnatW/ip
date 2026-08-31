@@ -38,6 +38,33 @@ public class CortisolBot {
                 }
                 printLine();
             }
+            else if (userInput.startsWith("todo ")) {
+                String description = userInput.substring(5);
+                tasks[tasksAdded] = new ToDo(description);
+                System.out.printf("Got It. I've added this task:\n\t[T][ ] %s\n Now you have %d tasks in the list.\n", description, tasksAdded + 1);
+                printLine();
+                tasksAdded++;
+            }
+            else if (userInput.startsWith("deadline ")) {
+                String[] words = userInput.split("/");
+                String description = words[0].substring(9);
+                String deadline = words[1].substring(3);
+                tasks[tasksAdded] = new Deadline(description,deadline);
+                System.out.printf("Got It. I've added this task:\n\t[D][ ] %s (by: %s)\n Now you have %d tasks in the list.\n", description, deadline, tasksAdded + 1);
+                printLine();
+                tasksAdded++;
+            }
+            else if (userInput.startsWith("event ")) {
+                String[] words = userInput.split("/");
+                String description = words[0].substring(9);
+                String startTime = words[1].substring(5);
+                String endTime = words[2].substring(3);
+                tasks[tasksAdded] = new Event(description,startTime,endTime);
+                System.out.printf("Got It. I've added this task:\n\t[E][ ] %s (from: %sto: %s)\n Now you have %d tasks in the list.\n", description, startTime, endTime, tasksAdded + 1);
+                printLine();
+                tasksAdded++;
+            }
+
             else if (userInput.equals("bye")) {
                 break;
             }
