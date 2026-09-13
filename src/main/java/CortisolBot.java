@@ -230,14 +230,19 @@ public class CortisolBot {
         printLine();
 
         // An ArrayList grows as needed, so there is no fixed ceiling on the
-        // number of tasks the bot can hold.
-        ArrayList<Task> tasks = new ArrayList<>();
+        // number of tasks the bot can hold. It starts off holding whatever was
+        // saved at the end of the previous session.
+        ArrayList<Task> tasks = Storage.load();
         Scanner scanner = new Scanner(System.in);
         boolean isExiting = false;
 
         while (!isExiting) {
             String userInput = scanner.nextLine();
             printLine();
+
+            // Set by any command that alters the list, so that the file is
+            // rewritten once per command rather than in six separate places.
+            boolean isListChanged = false;
 
             // Split into the command word and everything after it, so that a
             // command typed on its own (e.g. "todo") can still be recognised.
@@ -252,21 +257,27 @@ public class CortisolBot {
                     break;
                 case "todo":
                     addTodo(tasks, arguments);
+                    isListChanged = true;
                     break;
                 case "deadline":
                     addDeadline(tasks, arguments);
+                    isListChanged = true;
                     break;
                 case "event":
                     addEvent(tasks, arguments);
+                    isListChanged = true;
                     break;
                 case "mark":
                     markTask(tasks, arguments);
+                    isListChanged = true;
                     break;
                 case "unmark":
                     unmarkTask(tasks, arguments);
+                    isListChanged = true;
                     break;
                 case "delete":
                     deleteTask(tasks, arguments);
+                    isListChanged = true;
                     break;
                 case "bye":
                     isExiting = true;
@@ -281,6 +292,12 @@ public class CortisolBot {
                 // The exception message is already phrased for the user.
                 System.out.println(" " + e.getMessage());
                 printLine();
+            }
+
+            // Only reached when the command succeeded, since a failed command
+            // leaves isListChanged false.
+            if (isListChanged) {
+                Storage.save(tasks);
             }
         }
 
