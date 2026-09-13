@@ -24,4 +24,9 @@ public class Event extends Task {
                 + getDescription()
                 + " (from: " + startTime + " to: " + endTime + ")";
     }
+
+    @Override
+    public String toFileFormat() {
+        return "E | " + super.toFileFormat() + " | " + startTime + " | " + endTime;
+    }
 }
