@@ -1,12 +1,10 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
  * Talks to user and keeps todo list.
  */
 public class CortisolBot {
-
-    /** Maximum number of tasks the bot is able to keep track of. */
-    public static final int MAX_TASKS = 100;
 
     /**
      * Prints a horizontal separator line.
@@ -18,19 +16,18 @@ public class CortisolBot {
     /**
      * Lists all tasks currently in the task list.
      *
-     * @param tasks array containing the tasks
-     * @param taskCount number of tasks currently in the list
+     * @param tasks list containing the tasks
      */
-    public static void listTasks(Task[] tasks, int taskCount) {
-        if (taskCount == 0) {
+    public static void listTasks(ArrayList<Task> tasks) {
+        if (tasks.isEmpty()) {
             System.out.println("Your list is presently empty, sir/madam. A rare luxury.");
             printLine();
             return;
         }
 
         System.out.println("Here are the tasks in your list:");
-        for (int i = 0; i < taskCount; i++) {
-            System.out.printf("%d.%s\n", i + 1, tasks[i]);
+        for (int i = 0; i < tasks.size(); i++) {
+            System.out.printf("%d.%s\n", i + 1, tasks.get(i));
         }
         printLine();
     }
@@ -50,50 +47,32 @@ public class CortisolBot {
     }
 
     /**
-     * Ensures there is still room in the task list before adding a task.
-     *
-     * @param taskCount number of tasks currently in the list
-     * @throws CortisolException if the list is already full
-     */
-    public static void checkRoomForTask(int taskCount) throws CortisolException {
-        if (taskCount >= MAX_TASKS) {
-            throw new CortisolException("My ledger is full at " + MAX_TASKS
-                    + " tasks, sir/madam. I am afraid I cannot take another.");
-        }
-    }
-
-    /**
      * Adds a todo task to the task list.
      *
-     * @param tasks array containing the tasks
-     * @param taskCount index at which the new task should be added
+     * @param tasks list containing the tasks
      * @param arguments text following the "todo" command word
-     * @throws CortisolException if the list is full or no description was given
+     * @throws CortisolException if no description was given
      */
-    public static void addTodo(Task[] tasks, int taskCount, String arguments)
+    public static void addTodo(ArrayList<Task> tasks, String arguments)
             throws CortisolException {
-        checkRoomForTask(taskCount);
         if (arguments.isEmpty()) {
             throw new CortisolException("A todo without a description is rather like tea "
                     + "without leaves, sir/madam.\n Do try: todo <description>");
         }
 
-        tasks[taskCount] = new ToDo(arguments);
-        printAddedTask(tasks[taskCount], taskCount + 1);
+        tasks.add(new ToDo(arguments));
+        printAddedTask(tasks.get(tasks.size() - 1), tasks.size());
     }
 
     /**
      * Adds a deadline task to the task list.
      *
-     * @param tasks array containing the tasks
-     * @param taskCount index at which the new task should be added
+     * @param tasks list containing the tasks
      * @param arguments text following the "deadline" command word
-     * @throws CortisolException if the list is full, or the description or due date is missing
+     * @throws CortisolException if the description or due date is missing
      */
-    public static void addDeadline(Task[] tasks, int taskCount, String arguments)
+    public static void addDeadline(ArrayList<Task> tasks, String arguments)
             throws CortisolException {
-        checkRoomForTask(taskCount);
-
         // Limit of 2 keeps any later "/by" as part of the due date itself.
         String[] parts = arguments.split("/by", 2);
         String description = parts[0].trim();
@@ -108,22 +87,19 @@ public class CortisolBot {
                     + " Do try: deadline <description> /by <when>");
         }
 
-        tasks[taskCount] = new Deadline(description, deadline);
-        printAddedTask(tasks[taskCount], taskCount + 1);
+        tasks.add(new Deadline(description, deadline));
+        printAddedTask(tasks.get(tasks.size() - 1), tasks.size());
     }
 
     /**
      * Adds an event task to the task list.
      *
-     * @param tasks array containing the tasks
-     * @param taskCount index at which the new task should be added
+     * @param tasks list containing the tasks
      * @param arguments text following the "event" command word
-     * @throws CortisolException if the list is full, or the description, start or end is missing
+     * @throws CortisolException if the description, start or end is missing
      */
-    public static void addEvent(Task[] tasks, int taskCount, String arguments)
+    public static void addEvent(ArrayList<Task> tasks, String arguments)
             throws CortisolException {
-        checkRoomForTask(taskCount);
-
         String[] fromParts = arguments.split("/from", 2);
         String description = fromParts[0].trim();
         String[] toParts = fromParts.length > 1
@@ -141,12 +117,13 @@ public class CortisolBot {
                     + " Do try: event <description> /from <start> /to <end>");
         }
 
-        tasks[taskCount] = new Event(description, startTime, endTime);
-        printAddedTask(tasks[taskCount], taskCount + 1);
+        tasks.add(new Event(description, startTime, endTime));
+        printAddedTask(tasks.get(tasks.size() - 1), tasks.size());
     }
 
     /**
-     * Converts the argument of a mark/unmark command into a valid task index.
+     * Converts the argument of a command that refers to a task by number into a
+     * valid list index.
      *
      * @param arguments text following the command word
      * @param taskCount number of tasks currently in the list
@@ -185,36 +162,36 @@ public class CortisolBot {
     /**
      * Marks a task as done.
      *
-     * @param tasks array containing the tasks
-     * @param taskCount number of tasks currently in the list
+     * @param tasks list containing the tasks
      * @param arguments text following the "mark" command word
      * @throws CortisolException if the task number is missing or invalid
      */
-    public static void markTask(Task[] tasks, int taskCount, String arguments)
+    public static void markTask(ArrayList<Task> tasks, String arguments)
             throws CortisolException {
-        int taskIndex = parseTaskIndex(arguments, taskCount, "mark");
-        tasks[taskIndex].markAsDone();
+        int taskIndex = parseTaskIndex(arguments, tasks.size(), "mark");
+        Task task = tasks.get(taskIndex);
+        task.markAsDone();
 
         System.out.println("Nice! I've marked this task as done:");
-        System.out.printf("\t%s\n", tasks[taskIndex]);
+        System.out.printf("\t%s\n", task);
         printLine();
     }
 
     /**
      * Marks a task as not done.
      *
-     * @param tasks array containing the tasks
-     * @param taskCount number of tasks currently in the list
+     * @param tasks list containing the tasks
      * @param arguments text following the "unmark" command word
      * @throws CortisolException if the task number is missing or invalid
      */
-    public static void unmarkTask(Task[] tasks, int taskCount, String arguments)
+    public static void unmarkTask(ArrayList<Task> tasks, String arguments)
             throws CortisolException {
-        int taskIndex = parseTaskIndex(arguments, taskCount, "unmark");
-        tasks[taskIndex].markAsNotDone();
+        int taskIndex = parseTaskIndex(arguments, tasks.size(), "unmark");
+        Task task = tasks.get(taskIndex);
+        task.markAsNotDone();
 
         System.out.println("Ok, I've marked this task as not done yet:");
-        System.out.printf("\t%s\n", tasks[taskIndex]);
+        System.out.printf("\t%s\n", task);
         printLine();
     }
 
@@ -232,8 +209,9 @@ public class CortisolBot {
         System.out.println("How may I serve you at this evening?");
         printLine();
 
-        Task[] tasks = new Task[MAX_TASKS];
-        int taskCount = 0;
+        // An ArrayList grows as needed, so there is no fixed ceiling on the
+        // number of tasks the bot can hold.
+        ArrayList<Task> tasks = new ArrayList<>();
         Scanner scanner = new Scanner(System.in);
         boolean isExiting = false;
 
@@ -250,25 +228,22 @@ public class CortisolBot {
             try {
                 switch (commandWord) {
                 case "list":
-                    listTasks(tasks, taskCount);
+                    listTasks(tasks);
                     break;
                 case "todo":
-                    addTodo(tasks, taskCount, arguments);
-                    taskCount++;
+                    addTodo(tasks, arguments);
                     break;
                 case "deadline":
-                    addDeadline(tasks, taskCount, arguments);
-                    taskCount++;
+                    addDeadline(tasks, arguments);
                     break;
                 case "event":
-                    addEvent(tasks, taskCount, arguments);
-                    taskCount++;
+                    addEvent(tasks, arguments);
                     break;
                 case "mark":
-                    markTask(tasks, taskCount, arguments);
+                    markTask(tasks, arguments);
                     break;
                 case "unmark":
-                    unmarkTask(tasks, taskCount, arguments);
+                    unmarkTask(tasks, arguments);
                     break;
                 case "bye":
                     isExiting = true;
