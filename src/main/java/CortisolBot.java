@@ -195,6 +195,26 @@ public class CortisolBot {
         printLine();
     }
 
+    /**
+     * Removes a task from the task list.
+     *
+     * @param tasks list containing the tasks
+     * @param arguments text following the "delete" command word
+     * @throws CortisolException if the task number is missing or invalid
+     */
+    public static void deleteTask(ArrayList<Task> tasks, String arguments)
+            throws CortisolException {
+        int taskIndex = parseTaskIndex(arguments, tasks.size(), "delete");
+        // remove() returns the task it removed, so we can still report it
+        // after it has left the list.
+        Task removedTask = tasks.remove(taskIndex);
+
+        System.out.println("Noted. I've removed this task:");
+        System.out.printf("\t%s\n", removedTask);
+        System.out.printf(" Now you have %d tasks in the list.\n", tasks.size());
+        printLine();
+    }
+
     public static void main(String[] args) {
         String banner = "  ____           _   _           _ ____        _   \n"
                 + " / ___|___  _ __| |_(_)___  ___ | | __ )  ___ | |_ \n"
@@ -245,13 +265,17 @@ public class CortisolBot {
                 case "unmark":
                     unmarkTask(tasks, arguments);
                     break;
+                case "delete":
+                    deleteTask(tasks, arguments);
+                    break;
                 case "bye":
                     isExiting = true;
                     break;
                 default:
                     throw new CortisolException("I do beg your pardon, sir/madam, but that "
                             + "instruction is not in my repertoire.\n"
-                            + " I can manage: todo, deadline, event, list, mark, unmark, bye.");
+                            + " I can manage: todo, deadline, event, list, mark, unmark, "
+                            + "delete, bye.");
                 }
             } catch (CortisolException e) {
                 // The exception message is already phrased for the user.
