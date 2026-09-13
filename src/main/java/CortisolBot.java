@@ -5,6 +5,9 @@ import java.util.Scanner;
  */
 public class CortisolBot {
 
+    /** Maximum number of tasks the bot is able to keep track of. */
+    public static final int MAX_TASKS = 100;
+
     /**
      * Prints a horizontal separator line.
      */
@@ -19,6 +22,12 @@ public class CortisolBot {
      * @param taskCount number of tasks currently in the list
      */
     public static void listTasks(Task[] tasks, int taskCount) {
+        if (taskCount == 0) {
+            System.out.println("Your list is presently empty, sir/madam. A rare luxury.");
+            printLine();
+            return;
+        }
+
         System.out.println("Here are the tasks in your list:");
         for (int i = 0; i < taskCount; i++) {
             System.out.printf("%d.%s\n", i + 1, tasks[i]);
@@ -27,21 +36,50 @@ public class CortisolBot {
     }
 
     /**
+     * Announces a newly added task and the resulting size of the list.
+     *
+     * @param task the task that was just added
+     * @param taskCount number of tasks in the list after the addition
+     */
+    public static void printAddedTask(Task task, int taskCount) {
+        System.out.printf(
+                "Got It. I've added this task:\n\t%s\n"
+                        + " Now you have %d tasks in the list.\n",
+                task, taskCount);
+        printLine();
+    }
+
+    /**
+     * Ensures there is still room in the task list before adding a task.
+     *
+     * @param taskCount number of tasks currently in the list
+     * @throws CortisolException if the list is already full
+     */
+    public static void checkRoomForTask(int taskCount) throws CortisolException {
+        if (taskCount >= MAX_TASKS) {
+            throw new CortisolException("My ledger is full at " + MAX_TASKS
+                    + " tasks, sir/madam. I am afraid I cannot take another.");
+        }
+    }
+
+    /**
      * Adds a todo task to the task list.
      *
      * @param tasks array containing the tasks
      * @param taskCount index at which the new task should be added
-     * @param userInput user's todo command
+     * @param arguments text following the "todo" command word
+     * @throws CortisolException if the list is full or no description was given
      */
-    public static void addTodo(Task[] tasks, int taskCount, String userInput) {
-        String description = userInput.substring(5);
-        tasks[taskCount] = new ToDo(description);
+    public static void addTodo(Task[] tasks, int taskCount, String arguments)
+            throws CortisolException {
+        checkRoomForTask(taskCount);
+        if (arguments.isEmpty()) {
+            throw new CortisolException("A todo without a description is rather like tea "
+                    + "without leaves, sir/madam.\n Do try: todo <description>");
+        }
 
-        System.out.printf(
-                "Got It. I've added this task:\n\t[T][ ] %s\n"
-                        + " Now you have %d tasks in the list.\n",
-                description, taskCount + 1);
-        printLine();
+        tasks[taskCount] = new ToDo(arguments);
+        printAddedTask(tasks[taskCount], taskCount + 1);
     }
 
     /**
@@ -49,20 +87,29 @@ public class CortisolBot {
      *
      * @param tasks array containing the tasks
      * @param taskCount index at which the new task should be added
-     * @param userInput user's deadline command
+     * @param arguments text following the "deadline" command word
+     * @throws CortisolException if the list is full, or the description or due date is missing
      */
-    public static void addDeadline(Task[] tasks, int taskCount, String userInput) {
-        String[] words = userInput.split("/");
-        String description = words[0].substring(9);
-        String deadline = words[1].substring(3);
+    public static void addDeadline(Task[] tasks, int taskCount, String arguments)
+            throws CortisolException {
+        checkRoomForTask(taskCount);
+
+        // Limit of 2 keeps any later "/by" as part of the due date itself.
+        String[] parts = arguments.split("/by", 2);
+        String description = parts[0].trim();
+        String deadline = parts.length > 1 ? parts[1].trim() : "";
+
+        if (description.isEmpty()) {
+            throw new CortisolException("You have not told me what is due, sir/madam.\n"
+                    + " Do try: deadline <description> /by <when>");
+        }
+        if (deadline.isEmpty()) {
+            throw new CortisolException("A deadline is of little use without a date, sir/madam.\n"
+                    + " Do try: deadline <description> /by <when>");
+        }
 
         tasks[taskCount] = new Deadline(description, deadline);
-
-        System.out.printf(
-                "Got It. I've added this task:\n\t[D][ ] %s (by: %s)\n"
-                        + " Now you have %d tasks in the list.\n",
-                description, deadline, taskCount + 1);
-        printLine();
+        printAddedTask(tasks[taskCount], taskCount + 1);
     }
 
     /**
@@ -70,33 +117,82 @@ public class CortisolBot {
      *
      * @param tasks array containing the tasks
      * @param taskCount index at which the new task should be added
-     * @param userInput user's event command
+     * @param arguments text following the "event" command word
+     * @throws CortisolException if the list is full, or the description, start or end is missing
      */
-    public static void addEvent(Task[] tasks, int taskCount, String userInput) {
-        String[] words = userInput.split("/");
-        String description = words[0].substring(6);
-        String startTime = words[1].substring(6);
-        String endTime = words[2].substring(4);
+    public static void addEvent(Task[] tasks, int taskCount, String arguments)
+            throws CortisolException {
+        checkRoomForTask(taskCount);
+
+        String[] fromParts = arguments.split("/from", 2);
+        String description = fromParts[0].trim();
+        String[] toParts = fromParts.length > 1
+                ? fromParts[1].split("/to", 2)
+                : new String[0];
+        String startTime = toParts.length > 0 ? toParts[0].trim() : "";
+        String endTime = toParts.length > 1 ? toParts[1].trim() : "";
+
+        if (description.isEmpty()) {
+            throw new CortisolException("You have not told me what the occasion is, sir/madam.\n"
+                    + " Do try: event <description> /from <start> /to <end>");
+        }
+        if (startTime.isEmpty() || endTime.isEmpty()) {
+            throw new CortisolException("An event requires both a start and an end, sir/madam.\n"
+                    + " Do try: event <description> /from <start> /to <end>");
+        }
 
         tasks[taskCount] = new Event(description, startTime, endTime);
+        printAddedTask(tasks[taskCount], taskCount + 1);
+    }
 
-        System.out.printf(
-                "Got It. I've added this task:\n\t[E][ ] %s (from: %s to: %s)\n"
-                        + " Now you have %d tasks in the list.\n",
-                description, startTime, endTime, taskCount + 1);
-        printLine();
+    /**
+     * Converts the argument of a mark/unmark command into a valid task index.
+     *
+     * @param arguments text following the command word
+     * @param taskCount number of tasks currently in the list
+     * @param commandWord command the user typed, used to phrase the error messages
+     * @return zero-based index of the requested task
+     * @throws CortisolException if no number was given, the text is not a number,
+     *                           or the number does not refer to an existing task
+     */
+    public static int parseTaskIndex(String arguments, int taskCount, String commandWord)
+            throws CortisolException {
+        if (arguments.isEmpty()) {
+            throw new CortisolException("Which task shall I " + commandWord + ", sir/madam?\n"
+                    + " Do try: " + commandWord + " <task number>");
+        }
+
+        int taskNumber;
+        try {
+            taskNumber = Integer.parseInt(arguments);
+        } catch (NumberFormatException e) {
+            throw new CortisolException("'" + arguments + "' is not a number I recognise, "
+                    + "sir/madam.\n Do try: " + commandWord + " <task number>");
+        }
+
+        if (taskCount == 0) {
+            throw new CortisolException("Your list is presently empty, sir/madam. "
+                    + "There is nothing to " + commandWord + " just yet.");
+        }
+        if (taskNumber < 1 || taskNumber > taskCount) {
+            throw new CortisolException("I keep no task numbered " + taskNumber + ", sir/madam.\n"
+                    + " Your list runs from 1 to " + taskCount + ".");
+        }
+
+        return taskNumber - 1;
     }
 
     /**
      * Marks a task as done.
      *
      * @param tasks array containing the tasks
-     * @param userInput user's mark command
+     * @param taskCount number of tasks currently in the list
+     * @param arguments text following the "mark" command word
+     * @throws CortisolException if the task number is missing or invalid
      */
-    public static void markTask(Task[] tasks, String userInput) {
-        String[] words = userInput.split("\\s+");
-        int taskIndex = Integer.parseInt(words[1]) - 1;
-
+    public static void markTask(Task[] tasks, int taskCount, String arguments)
+            throws CortisolException {
+        int taskIndex = parseTaskIndex(arguments, taskCount, "mark");
         tasks[taskIndex].markAsDone();
 
         System.out.println("Nice! I've marked this task as done:");
@@ -108,12 +204,13 @@ public class CortisolBot {
      * Marks a task as not done.
      *
      * @param tasks array containing the tasks
-     * @param userInput user's unmark command
+     * @param taskCount number of tasks currently in the list
+     * @param arguments text following the "unmark" command word
+     * @throws CortisolException if the task number is missing or invalid
      */
-    public static void unmarkTask(Task[] tasks, String userInput) {
-        String[] words = userInput.split("\\s+");
-        int taskIndex = Integer.parseInt(words[1]) - 1;
-
+    public static void unmarkTask(Task[] tasks, int taskCount, String arguments)
+            throws CortisolException {
+        int taskIndex = parseTaskIndex(arguments, taskCount, "unmark");
         tasks[taskIndex].markAsNotDone();
 
         System.out.println("Ok, I've marked this task as not done yet:");
@@ -135,36 +232,56 @@ public class CortisolBot {
         System.out.println("How may I serve you at this evening?");
         printLine();
 
-        Task[] tasks = new Task[100];
+        Task[] tasks = new Task[MAX_TASKS];
         int taskCount = 0;
         Scanner scanner = new Scanner(System.in);
+        boolean isExiting = false;
 
-        while (true) {
+        while (!isExiting) {
             String userInput = scanner.nextLine();
             printLine();
 
-            if (userInput.equals("list")) {
-                listTasks(tasks, taskCount);
-            } else if (userInput.startsWith("todo ")) {
-                addTodo(tasks, taskCount, userInput);
-                taskCount++;
-            } else if (userInput.startsWith("deadline ")) {
-                addDeadline(tasks, taskCount, userInput);
-                taskCount++;
-            } else if (userInput.startsWith("event ")) {
-                addEvent(tasks, taskCount, userInput);
-                taskCount++;
-            } else if (userInput.equals("bye")) {
-                break;
-            } else if (userInput.startsWith("mark ")) {
-                markTask(tasks, userInput);
-            } else if (userInput.startsWith("unmark ")) {
-                unmarkTask(tasks, userInput);
-            } else {
-                tasks[taskCount] = new Task(userInput);
-                System.out.printf("added: %s\n", userInput);
+            // Split into the command word and everything after it, so that a
+            // command typed on its own (e.g. "todo") can still be recognised.
+            String[] inputParts = userInput.trim().split("\\s+", 2);
+            String commandWord = inputParts[0];
+            String arguments = inputParts.length > 1 ? inputParts[1].trim() : "";
+
+            try {
+                switch (commandWord) {
+                case "list":
+                    listTasks(tasks, taskCount);
+                    break;
+                case "todo":
+                    addTodo(tasks, taskCount, arguments);
+                    taskCount++;
+                    break;
+                case "deadline":
+                    addDeadline(tasks, taskCount, arguments);
+                    taskCount++;
+                    break;
+                case "event":
+                    addEvent(tasks, taskCount, arguments);
+                    taskCount++;
+                    break;
+                case "mark":
+                    markTask(tasks, taskCount, arguments);
+                    break;
+                case "unmark":
+                    unmarkTask(tasks, taskCount, arguments);
+                    break;
+                case "bye":
+                    isExiting = true;
+                    break;
+                default:
+                    throw new CortisolException("I do beg your pardon, sir/madam, but that "
+                            + "instruction is not in my repertoire.\n"
+                            + " I can manage: todo, deadline, event, list, mark, unmark, bye.");
+                }
+            } catch (CortisolException e) {
+                // The exception message is already phrased for the user.
+                System.out.println(" " + e.getMessage());
                 printLine();
-                taskCount++;
             }
         }
 
