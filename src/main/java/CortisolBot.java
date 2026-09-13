@@ -233,13 +233,17 @@ public class CortisolBot {
         printLine();
 
         Task[] tasks = new Task[MAX_TASKS];
-        int taskCount = 0;
+        int taskCount = Storage.load(tasks);
         Scanner scanner = new Scanner(System.in);
         boolean isExiting = false;
 
         while (!isExiting) {
             String userInput = scanner.nextLine();
             printLine();
+
+            // Set by any command that alters the list, so that the file is
+            // rewritten once per command rather than in five separate places.
+            boolean isListChanged = false;
 
             // Split into the command word and everything after it, so that a
             // command typed on its own (e.g. "todo") can still be recognised.
@@ -255,20 +259,25 @@ public class CortisolBot {
                 case "todo":
                     addTodo(tasks, taskCount, arguments);
                     taskCount++;
+                    isListChanged = true;
                     break;
                 case "deadline":
                     addDeadline(tasks, taskCount, arguments);
                     taskCount++;
+                    isListChanged = true;
                     break;
                 case "event":
                     addEvent(tasks, taskCount, arguments);
                     taskCount++;
+                    isListChanged = true;
                     break;
                 case "mark":
                     markTask(tasks, taskCount, arguments);
+                    isListChanged = true;
                     break;
                 case "unmark":
                     unmarkTask(tasks, taskCount, arguments);
+                    isListChanged = true;
                     break;
                 case "bye":
                     isExiting = true;
@@ -282,6 +291,12 @@ public class CortisolBot {
                 // The exception message is already phrased for the user.
                 System.out.println(" " + e.getMessage());
                 printLine();
+            }
+
+            // Only reached when the command succeeded, since a failed command
+            // leaves isListChanged false.
+            if (isListChanged) {
+                Storage.save(tasks, taskCount);
             }
         }
 
