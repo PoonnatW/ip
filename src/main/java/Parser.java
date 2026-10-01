@@ -35,6 +35,8 @@ public class Parser {
         switch (commandWord) {
         case "list":
             return new ListCommand();
+        case "find":
+            return new FindCommand(parseKeyword(arguments));
         case "todo":
             return new AddCommand(parseTodo(arguments));
         case "deadline":
@@ -52,7 +54,7 @@ public class Parser {
         default:
             throw new CortisolException("I do beg your pardon, sir/madam, but that "
                     + "instruction is not in my repertoire.\n"
-                    + " I can manage: todo, deadline, event, list, mark, unmark, "
+                    + " I can manage: todo, deadline, event, list, find, mark, unmark, "
                     + "delete, bye.");
         }
     }
@@ -110,6 +112,22 @@ public class Parser {
             throw new CortisolException("'" + arguments + "' is not a number I recognise, "
                     + "sir/madam.\n Do try: " + commandWord + " <task number>");
         }
+    }
+
+    /**
+     * Reads the keyword out of the argument of a search.
+     *
+     * @param arguments text following the command word
+     * @return the keyword to search for
+     * @throws CortisolException if nothing was given to search for
+     */
+    public static String parseKeyword(String arguments) throws CortisolException {
+        if (arguments.isEmpty()) {
+            throw new CortisolException("You have not said what to look for, sir/madam.\n"
+                    + " Do try: find <keyword>");
+        }
+
+        return arguments;
     }
 
     /**

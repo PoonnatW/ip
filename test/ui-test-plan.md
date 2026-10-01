@@ -278,11 +278,11 @@ bye
 {{greeting}}
 -------------------------------------------------------
  I do beg your pardon, sir/madam, but that instruction is not in my repertoire.
- I can manage: todo, deadline, event, list, mark, unmark, delete, bye.
+ I can manage: todo, deadline, event, list, find, mark, unmark, delete, bye.
 -------------------------------------------------------
 -------------------------------------------------------
  I do beg your pardon, sir/madam, but that instruction is not in my repertoire.
- I can manage: todo, deadline, event, list, mark, unmark, delete, bye.
+ I can manage: todo, deadline, event, list, find, mark, unmark, delete, bye.
 -------------------------------------------------------
 {{farewell}}
 ```
@@ -1132,4 +1132,122 @@ Your tasks, sir/madam, as they presently stand:
 	2.[D][ ] return book (by: Jun 06 2019)
 -------------------------------------------------------
 {{farewell}}
+```
+
+## TC-26 Finding tasks by keyword
+
+**Aim:** Check that `find` shows every task whose description contains the keyword and no others,
+that the search ignores case, and that searching leaves the list exactly as it was -- the `list` at
+the end and the saved file both still hold all three tasks.
+
+### Input
+
+```text
+todo read book
+deadline return book /by 2019-06-06
+todo buy milk
+find book
+find BOOK
+find milk
+list
+bye
+```
+
+### Expected output
+
+```text
+{{greeting}}
+-------------------------------------------------------
+Very good, sir/madam. I have added the following:
+	[T][ ] read book
+ That makes 1 in your keeping.
+-------------------------------------------------------
+-------------------------------------------------------
+Very good, sir/madam. I have added the following:
+	[D][ ] return book (by: Jun 06 2019)
+ That makes 2 in your keeping.
+-------------------------------------------------------
+-------------------------------------------------------
+Very good, sir/madam. I have added the following:
+	[T][ ] buy milk
+ That makes 3 in your keeping.
+-------------------------------------------------------
+-------------------------------------------------------
+These tasks mention 'book', sir/madam:
+	1.[T][ ] read book
+	2.[D][ ] return book (by: Jun 06 2019)
+-------------------------------------------------------
+-------------------------------------------------------
+These tasks mention 'BOOK', sir/madam:
+	1.[T][ ] read book
+	2.[D][ ] return book (by: Jun 06 2019)
+-------------------------------------------------------
+-------------------------------------------------------
+These tasks mention 'milk', sir/madam:
+	1.[T][ ] buy milk
+-------------------------------------------------------
+-------------------------------------------------------
+Your tasks, sir/madam, as they presently stand:
+	1.[T][ ] read book
+	2.[D][ ] return book (by: Jun 06 2019)
+	3.[T][ ] buy milk
+-------------------------------------------------------
+{{farewell}}
+```
+
+### Expected data file
+
+```text
+T | 0 | read book
+D | 0 | return book | 2019-06-06
+T | 0 | buy milk
+```
+
+## TC-27 Searching for what is not there
+
+**Aim:** Check the three ways a search can come up short -- an empty list, a keyword nothing matches,
+and no keyword at all -- interleaved with an add, so that a search that quietly disturbed the list
+would show up in the `list` at the end.
+
+### Input
+
+```text
+find book
+todo read book
+find newspaper
+find
+list
+bye
+```
+
+### Expected output
+
+```text
+{{greeting}}
+-------------------------------------------------------
+Nothing in your list mentions 'book', sir/madam.
+-------------------------------------------------------
+-------------------------------------------------------
+Very good, sir/madam. I have added the following:
+	[T][ ] read book
+ That makes 1 in your keeping.
+-------------------------------------------------------
+-------------------------------------------------------
+Nothing in your list mentions 'newspaper', sir/madam.
+-------------------------------------------------------
+-------------------------------------------------------
+ You have not said what to look for, sir/madam.
+ Do try: find <keyword>
+-------------------------------------------------------
+-------------------------------------------------------
+Your tasks, sir/madam, as they presently stand:
+	1.[T][ ] read book
+-------------------------------------------------------
+{{farewell}}
+```
+
+### Expected data file
+
+```text
+T | 0 | read book
 ```
