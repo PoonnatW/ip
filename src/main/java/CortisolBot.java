@@ -1,3 +1,5 @@
+import java.util.Optional;
+
 /**
  * Talks to the user and keeps the task list.
  * <p>
@@ -53,66 +55,64 @@ public class CortisolBot {
             String userInput = ui.readCommand();
             ui.showLine();
 
-            // Set by any command that alters the list, so that the file is
-            // rewritten once per command rather than in six separate places.
-            boolean isListChanged = false;
-
-            // The command word and everything after it, so that a command typed
-            // on its own (e.g. "todo") can still be recognised.
-            String commandWord = Parser.parseCommandWord(userInput);
-            String arguments = Parser.parseArguments(userInput);
-
             try {
-                switch (commandWord) {
-                case "list":
-                    ui.showTaskList(tasks.asArrayList());
-                    break;
-                case "todo":
-                    addTask(Parser.parseTodo(arguments));
-                    isListChanged = true;
-                    break;
-                case "deadline":
-                    addTask(Parser.parseDeadline(arguments));
-                    isListChanged = true;
-                    break;
-                case "event":
-                    addTask(Parser.parseEvent(arguments));
-                    isListChanged = true;
-                    break;
-                case "mark":
-                    markTask(arguments);
-                    isListChanged = true;
-                    break;
-                case "unmark":
-                    unmarkTask(arguments);
-                    isListChanged = true;
-                    break;
-                case "delete":
-                    deleteTask(arguments);
-                    isListChanged = true;
-                    break;
-                case "bye":
-                    isExiting = true;
-                    break;
-                default:
-                    throw new CortisolException("I do beg your pardon, sir/madam, but that "
-                            + "instruction is not in my repertoire.\n"
-                            + " I can manage: todo, deadline, event, list, mark, unmark, "
-                            + "delete, bye.");
+                // Commands that have a class of their own are built by the
+                // Parser and carried out without this loop knowing which one it
+                // is holding. The rest are still handled by the switch below,
+                // and move across one at a time.
+                Optional<Command> command = Parser.parse(userInput);
+                if (command.isPresent()) {
+                    command.get().execute(tasks, ui, storage);
+                    isExiting = command.get().isExit();
+                } else {
+                    runRemainingCommand(Parser.parseCommandWord(userInput),
+                            Parser.parseArguments(userInput));
                 }
             } catch (CortisolException e) {
                 // The exception message is already phrased for the user.
                 ui.showError(e.getMessage());
             }
+        }
+    }
 
-            // Only reached when the command succeeded, since a failed command
-            // leaves isListChanged false.
-            if (isListChanged) {
-                saveTasks();
-            }
+    /**
+     * Carries out a command that does not yet have a class of its own.
+     *
+     * @param commandWord the first word the user typed
+     * @param arguments everything after the command word
+     * @throws CortisolException if the command is unknown or cannot be carried out
+     */
+    private void runRemainingCommand(String commandWord, String arguments)
+            throws CortisolException {
+        switch (commandWord) {
+        case "todo":
+            addTask(Parser.parseTodo(arguments));
+            break;
+        case "deadline":
+            addTask(Parser.parseDeadline(arguments));
+            break;
+        case "event":
+            addTask(Parser.parseEvent(arguments));
+            break;
+        case "mark":
+            markTask(arguments);
+            break;
+        case "unmark":
+            unmarkTask(arguments);
+            break;
+        case "delete":
+            deleteTask(arguments);
+            break;
+        default:
+            throw new CortisolException("I do beg your pardon, sir/madam, but that "
+                    + "instruction is not in my repertoire.\n"
+                    + " I can manage: todo, deadline, event, list, mark, unmark, "
+                    + "delete, bye.");
         }
 
-        ui.showFarewell();
+        // Every command still handled here alters the list, and an unknown one
+        // has already thrown, so reaching this line means a save is due.
+        saveTasks();
     }
 
     /**

@@ -1,3 +1,5 @@
+import java.util.Optional;
+
 /**
  * Makes sense of what the user typed.
  * <p>
@@ -14,6 +16,29 @@ public class Parser {
 
     /** Prevents instantiation: this class is a collection of functions. */
     private Parser() {
+    }
+
+    /**
+     * Returns the command the user asked for, ready to be carried out.
+     * <p>
+     * Only the commands that have a class of their own are recognised so far.
+     * The rest are still handled by the switch in {@link CortisolBot} and move
+     * across one at a time, which is why the answer may be empty rather than a
+     * command.
+     *
+     * @param userInput one line exactly as the user typed it
+     * @return the command, or an empty Optional if that command word does not
+     *         have a Command class yet
+     */
+    public static Optional<Command> parse(String userInput) {
+        switch (parseCommandWord(userInput)) {
+        case "list":
+            return Optional.of(new ListCommand());
+        case "bye":
+            return Optional.of(new ExitCommand());
+        default:
+            return Optional.empty();
+        }
     }
 
     /**
