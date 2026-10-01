@@ -27,7 +27,7 @@ public class CortisolBot {
 
         System.out.println("Your tasks, sir/madam, as they presently stand:");
         for (int i = 0; i < tasks.size(); i++) {
-            System.out.printf("%d.%s\n", i + 1, tasks.get(i));
+            System.out.printf("\t%d.%s\n", i + 1, tasks.get(i));
         }
         printLine();
     }

@@ -19,27 +19,25 @@ Rules for writing a test case:
 * The last input line must be `bye`. Without it the program waits forever for more input.
 * `{{greeting}}` and `{{farewell}}` on a line of their own stand for the blocks under **Snippets**,
   so that the banner need not be repeated in every test case.
-* Indentation is compared exactly, so the task line printed by an add, a `mark`, an `unmark` or a
-  `delete` must carry its leading **tab**. Trailing spaces and trailing blank lines are ignored,
-  since they cannot be seen on screen and most editors strip them.
+* Indentation is compared exactly, so every task line -- the one printed by an add, a `mark`, an
+  `unmark` or a `delete`, and each numbered line printed by `list` -- must carry its leading **tab**.
+  Trailing spaces and trailing blank lines are ignored, since they cannot be seen on screen and most
+  editors strip them.
 * Each test case runs in its own folder under `_temp/ui-test-runs/`, so the task list saved by one
   test case can never reach another, and the real `data/cortisolbot.txt` is never touched.
 
 ## Known deviations recorded here on purpose
 
-These are current behaviour, deliberately captured so that the day they are changed, the test session
-fails and this plan must be updated to match. They are **not** endorsements.
+This is current behaviour, deliberately captured so that the day it is changed, the test session
+fails and this plan must be updated to match. It is **not** an endorsement.
 
-1. `list` prints its tasks with no leading tab (`1.[T][ ] read book`), while `mark`, `unmark`,
-   `delete` and the add commands all indent theirs with a tab. AGENTS.md calls for the tab.
-2. A description containing the data file's own separator, `|`, is saved faithfully but comes back
+1. A description containing the data file's own separator, `|`, is saved faithfully but comes back
    truncated at the separator on the next run, silently losing everything after it. TC-17 records the
-   saving, TC-18 records the loss. Unlike the first this is a genuine defect rather than a cosmetic
-   one, and the fix (escaping the separator, or splitting with a limit) belongs in whichever
-   increment touches `Storage` next.
+   saving, TC-18 records the loss. This is a genuine defect rather than a cosmetic one, and the fix
+   (escaping the separator, or splitting with a limit) belongs in whichever increment touches
+   `Storage` next.
 
-The first is to be fixed before the `A-MoreOOP` increment. When either is fixed, update the affected
-expected output here in the same commit as the code change.
+When it is fixed, update the affected expected output here in the same commit as the code change.
 
 ## A note on trailing spaces
 
@@ -149,9 +147,9 @@ Very good, sir/madam. I have added the following:
 -------------------------------------------------------
 -------------------------------------------------------
 Your tasks, sir/madam, as they presently stand:
-1.[T][ ] read book
-2.[D][ ] return book (by: June 6th)
-3.[E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+	1.[T][ ] read book
+	2.[D][ ] return book (by: June 6th)
+	3.[E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
 -------------------------------------------------------
 {{farewell}}
 ```
@@ -195,7 +193,7 @@ Consider it done, sir/madam:
 -------------------------------------------------------
 -------------------------------------------------------
 Your tasks, sir/madam, as they presently stand:
-1.[T][X] read book
+	1.[T][X] read book
 -------------------------------------------------------
 -------------------------------------------------------
 Very well, sir/madam. I have returned it to the undone:
@@ -203,7 +201,7 @@ Very well, sir/madam. I have returned it to the undone:
 -------------------------------------------------------
 -------------------------------------------------------
 Your tasks, sir/madam, as they presently stand:
-1.[T][ ] read book
+	1.[T][ ] read book
 -------------------------------------------------------
 {{farewell}}
 ```
@@ -250,7 +248,7 @@ Consider it forgotten, sir/madam:
 -------------------------------------------------------
 -------------------------------------------------------
 Your tasks, sir/madam, as they presently stand:
-1.[T][ ] return book
+	1.[T][ ] return book
 -------------------------------------------------------
 {{farewell}}
 ```
@@ -399,9 +397,9 @@ bye
 -------------------------------------------------------
 -------------------------------------------------------
 Your tasks, sir/madam, as they presently stand:
-1.[T][X] read book
-2.[D][ ] return book (by: June 6th)
-3.[E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+	1.[T][X] read book
+	2.[D][ ] return book (by: June 6th)
+	3.[E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
 -------------------------------------------------------
 {{farewell}}
 ```
@@ -435,7 +433,7 @@ bye
 -------------------------------------------------------
 -------------------------------------------------------
 Your tasks, sir/madam, as they presently stand:
-1.[T][X] read book
+	1.[T][X] read book
 -------------------------------------------------------
 {{farewell}}
 ```
@@ -464,7 +462,7 @@ Very good, sir/madam. I have added the following:
 -------------------------------------------------------
 -------------------------------------------------------
 Your tasks, sir/madam, as they presently stand:
-1.[T][ ] walk the dog
+	1.[T][ ] walk the dog
 -------------------------------------------------------
 {{farewell}}
 ```
@@ -515,8 +513,8 @@ Very good, sir/madam. I have added the following:
 -------------------------------------------------------
 -------------------------------------------------------
 Your tasks, sir/madam, as they presently stand:
-1.[T][ ] read book
-2.[D][ ] return book (by: June 6th)
+	1.[T][ ] read book
+	2.[D][ ] return book (by: June 6th)
 -------------------------------------------------------
 -------------------------------------------------------
  I keep no task numbered 9, sir/madam.
@@ -524,8 +522,8 @@ Your tasks, sir/madam, as they presently stand:
 -------------------------------------------------------
 -------------------------------------------------------
 Your tasks, sir/madam, as they presently stand:
-1.[T][ ] read book
-2.[D][ ] return book (by: June 6th)
+	1.[T][ ] read book
+	2.[D][ ] return book (by: June 6th)
 -------------------------------------------------------
 -------------------------------------------------------
  I keep no task numbered 0, sir/madam.
@@ -533,8 +531,8 @@ Your tasks, sir/madam, as they presently stand:
 -------------------------------------------------------
 -------------------------------------------------------
 Your tasks, sir/madam, as they presently stand:
-1.[T][ ] read book
-2.[D][ ] return book (by: June 6th)
+	1.[T][ ] read book
+	2.[D][ ] return book (by: June 6th)
 -------------------------------------------------------
 {{farewell}}
 ```
@@ -602,9 +600,9 @@ Consider it done, sir/madam:
 -------------------------------------------------------
 -------------------------------------------------------
 Your tasks, sir/madam, as they presently stand:
-1.[T][X] read book
-2.[T][ ] return book
-3.[T][X] buy milk
+	1.[T][X] read book
+	2.[T][ ] return book
+	3.[T][X] buy milk
 -------------------------------------------------------
 -------------------------------------------------------
 Consider it forgotten, sir/madam:
@@ -613,8 +611,8 @@ Consider it forgotten, sir/madam:
 -------------------------------------------------------
 -------------------------------------------------------
 Your tasks, sir/madam, as they presently stand:
-1.[T][X] read book
-2.[T][ ] return book
+	1.[T][X] read book
+	2.[T][ ] return book
 -------------------------------------------------------
 -------------------------------------------------------
 Consider it forgotten, sir/madam:
@@ -623,7 +621,7 @@ Consider it forgotten, sir/madam:
 -------------------------------------------------------
 -------------------------------------------------------
 Your tasks, sir/madam, as they presently stand:
-1.[T][ ] return book
+	1.[T][ ] return book
 -------------------------------------------------------
 {{farewell}}
 ```
@@ -678,7 +676,7 @@ Very good, sir/madam. I have added the following:
 -------------------------------------------------------
 -------------------------------------------------------
 Your tasks, sir/madam, as they presently stand:
-1.[T][ ] read book
+	1.[T][ ] read book
 -------------------------------------------------------
 {{farewell}}
 ```
@@ -726,7 +724,7 @@ Consider it done, sir/madam:
 -------------------------------------------------------
 -------------------------------------------------------
 Your tasks, sir/madam, as they presently stand:
-1.[T][X] read book
+	1.[T][X] read book
 -------------------------------------------------------
 -------------------------------------------------------
 Very well, sir/madam. I have returned it to the undone:
@@ -738,7 +736,7 @@ Very well, sir/madam. I have returned it to the undone:
 -------------------------------------------------------
 -------------------------------------------------------
 Your tasks, sir/madam, as they presently stand:
-1.[T][ ] read book
+	1.[T][ ] read book
 -------------------------------------------------------
 {{farewell}}
 ```
@@ -780,8 +778,8 @@ Very good, sir/madam. I have added the following:
 -------------------------------------------------------
 -------------------------------------------------------
 Your tasks, sir/madam, as they presently stand:
-1.[T][ ] deadline the report /by tomorrow
-2.[D][ ] submit form (by: next /by week)
+	1.[T][ ] deadline the report /by tomorrow
+	2.[D][ ] submit form (by: next /by week)
 -------------------------------------------------------
 {{farewell}}
 ```
@@ -817,7 +815,7 @@ Very good, sir/madam. I have added the following:
 -------------------------------------------------------
 -------------------------------------------------------
 Your tasks, sir/madam, as they presently stand:
-1.[T][ ] read | book
+	1.[T][ ] read | book
 -------------------------------------------------------
 {{farewell}}
 ```
@@ -855,7 +853,7 @@ bye
 -------------------------------------------------------
 -------------------------------------------------------
 Your tasks, sir/madam, as they presently stand:
-1.[T][ ] read
+	1.[T][ ] read
 -------------------------------------------------------
 {{farewell}}
 ```
@@ -885,7 +883,7 @@ Very good, sir/madam. I have added the following:
 -------------------------------------------------------
 -------------------------------------------------------
 Your tasks, sir/madam, as they presently stand:
-1.[D][ ] return the book (by: June 6th)
+	1.[D][ ] return the book (by: June 6th)
 -------------------------------------------------------
 {{farewell}}
 ```
@@ -925,7 +923,7 @@ bye
 -------------------------------------------------------
 -------------------------------------------------------
 Your tasks, sir/madam, as they presently stand:
-1.[T][X] read book
+	1.[T][X] read book
 -------------------------------------------------------
 {{farewell}}
 ```
@@ -994,7 +992,7 @@ Consider it done, sir/madam:
 -------------------------------------------------------
 -------------------------------------------------------
 Your tasks, sir/madam, as they presently stand:
-1.[T][X] read book
+	1.[T][X] read book
 -------------------------------------------------------
 {{farewell}}
 ```
