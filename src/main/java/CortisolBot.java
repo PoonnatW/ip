@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-
 /**
  * Talks to the user and keeps the task list.
  * <p>
@@ -23,10 +21,11 @@ public class CortisolBot {
     /**
      * Tasks held for this session.
      * <p>
-     * An ArrayList grows as needed, so there is no fixed ceiling on the number
-     * of tasks the bot can hold.
+     * A TaskList grows as needed, so there is no fixed ceiling on the number of
+     * tasks the bot can hold, and it is what refuses a task number that refers
+     * to nothing.
      */
-    private final ArrayList<Task> tasks;
+    private final TaskList tasks;
 
     /**
      * Constructs a bot that keeps its task list in the named file.
@@ -39,7 +38,7 @@ public class CortisolBot {
     public CortisolBot(String filePath) {
         this.ui = new Ui();
         this.storage = new Storage(filePath);
-        this.tasks = new ArrayList<>();
+        this.tasks = new TaskList();
     }
 
     /**
@@ -67,7 +66,7 @@ public class CortisolBot {
             try {
                 switch (commandWord) {
                 case "list":
-                    ui.showTaskList(tasks);
+                    ui.showTaskList(tasks.asArrayList());
                     break;
                 case "todo":
                     addTodo(arguments);
@@ -140,7 +139,7 @@ public class CortisolBot {
      */
     private void saveTasks() {
         try {
-            storage.save(tasks);
+            storage.save(tasks.asArrayList());
         } catch (CortisolException e) {
             ui.showError(e.getMessage());
         }
@@ -158,8 +157,9 @@ public class CortisolBot {
                     + "without leaves, sir/madam.\n Do try: todo <description>");
         }
 
-        tasks.add(new ToDo(arguments));
-        ui.showAddedTask(tasks.get(tasks.size() - 1), tasks.size());
+        Task task = new ToDo(arguments);
+        tasks.add(task);
+        ui.showAddedTask(task, tasks.size());
     }
 
     /**
@@ -183,8 +183,9 @@ public class CortisolBot {
                     + " Do try: deadline <description> /by <when>");
         }
 
-        tasks.add(new Deadline(description, deadline));
-        ui.showAddedTask(tasks.get(tasks.size() - 1), tasks.size());
+        Task task = new Deadline(description, deadline);
+        tasks.add(task);
+        ui.showAddedTask(task, tasks.size());
     }
 
     /**
@@ -211,46 +212,37 @@ public class CortisolBot {
                     + " Do try: event <description> /from <start> /to <end>");
         }
 
-        tasks.add(new Event(description, startTime, endTime));
-        ui.showAddedTask(tasks.get(tasks.size() - 1), tasks.size());
+        Task task = new Event(description, startTime, endTime);
+        tasks.add(task);
+        ui.showAddedTask(task, tasks.size());
     }
 
     /**
-     * Converts the argument of a command that refers to a task by number into a
-     * valid list index.
+     * Reads the task number out of the argument of a command that refers to a
+     * task by number.
+     * <p>
+     * Whether the number refers to an existing task is not decided here: that
+     * belongs to {@link TaskList}, which is the only place that knows how many
+     * tasks there are.
      *
      * @param arguments text following the command word
-     * @param taskCount number of tasks currently in the list
      * @param commandWord command the user typed, used to phrase the error messages
-     * @return zero-based index of the requested task
-     * @throws CortisolException if no number was given, the text is not a number,
-     *                           or the number does not refer to an existing task
+     * @return the number the user typed, counting from 1
+     * @throws CortisolException if no number was given, or the text is not a number
      */
-    private static int parseTaskIndex(String arguments, int taskCount, String commandWord)
+    private static int parseTaskNumber(String arguments, String commandWord)
             throws CortisolException {
         if (arguments.isEmpty()) {
             throw new CortisolException("Which task shall I " + commandWord + ", sir/madam?\n"
                     + " Do try: " + commandWord + " <task number>");
         }
 
-        int taskNumber;
         try {
-            taskNumber = Integer.parseInt(arguments);
+            return Integer.parseInt(arguments);
         } catch (NumberFormatException e) {
             throw new CortisolException("'" + arguments + "' is not a number I recognise, "
                     + "sir/madam.\n Do try: " + commandWord + " <task number>");
         }
-
-        if (taskCount == 0) {
-            throw new CortisolException("Your list is presently empty, sir/madam. "
-                    + "There is nothing to " + commandWord + " just yet.");
-        }
-        if (taskNumber < 1 || taskNumber > taskCount) {
-            throw new CortisolException("I keep no task numbered " + taskNumber + ", sir/madam.\n"
-                    + " Your list runs from 1 to " + taskCount + ".");
-        }
-
-        return taskNumber - 1;
     }
 
     /**
@@ -260,8 +252,7 @@ public class CortisolBot {
      * @throws CortisolException if the task number is missing or invalid
      */
     private void markTask(String arguments) throws CortisolException {
-        int taskIndex = parseTaskIndex(arguments, tasks.size(), "mark");
-        Task task = tasks.get(taskIndex);
+        Task task = tasks.get(parseTaskNumber(arguments, "mark"), "mark");
         task.markAsDone();
 
         ui.showMarkedTask(task);
@@ -274,8 +265,7 @@ public class CortisolBot {
      * @throws CortisolException if the task number is missing or invalid
      */
     private void unmarkTask(String arguments) throws CortisolException {
-        int taskIndex = parseTaskIndex(arguments, tasks.size(), "unmark");
-        Task task = tasks.get(taskIndex);
+        Task task = tasks.get(parseTaskNumber(arguments, "unmark"), "unmark");
         task.markAsNotDone();
 
         ui.showUnmarkedTask(task);
@@ -288,10 +278,9 @@ public class CortisolBot {
      * @throws CortisolException if the task number is missing or invalid
      */
     private void deleteTask(String arguments) throws CortisolException {
-        int taskIndex = parseTaskIndex(arguments, tasks.size(), "delete");
         // remove() returns the task it removed, so we can still report it
         // after it has left the list.
-        Task removedTask = tasks.remove(taskIndex);
+        Task removedTask = tasks.remove(parseTaskNumber(arguments, "delete"), "delete");
 
         ui.showRemovedTask(removedTask, tasks.size());
     }
