@@ -57,11 +57,10 @@ public class CortisolBot {
             // rewritten once per command rather than in six separate places.
             boolean isListChanged = false;
 
-            // Split into the command word and everything after it, so that a
-            // command typed on its own (e.g. "todo") can still be recognised.
-            String[] inputParts = userInput.trim().split("\\s+", 2);
-            String commandWord = inputParts[0];
-            String arguments = inputParts.length > 1 ? inputParts[1].trim() : "";
+            // The command word and everything after it, so that a command typed
+            // on its own (e.g. "todo") can still be recognised.
+            String commandWord = Parser.parseCommandWord(userInput);
+            String arguments = Parser.parseArguments(userInput);
 
             try {
                 switch (commandWord) {
@@ -69,15 +68,15 @@ public class CortisolBot {
                     ui.showTaskList(tasks.asArrayList());
                     break;
                 case "todo":
-                    addTodo(arguments);
+                    addTask(Parser.parseTodo(arguments));
                     isListChanged = true;
                     break;
                 case "deadline":
-                    addDeadline(arguments);
+                    addTask(Parser.parseDeadline(arguments));
                     isListChanged = true;
                     break;
                 case "event":
-                    addEvent(arguments);
+                    addTask(Parser.parseEvent(arguments));
                     isListChanged = true;
                     break;
                 case "mark":
@@ -146,103 +145,17 @@ public class CortisolBot {
     }
 
     /**
-     * Adds a todo task to the task list.
-     *
-     * @param arguments text following the "todo" command word
-     * @throws CortisolException if no description was given
-     */
-    private void addTodo(String arguments) throws CortisolException {
-        if (arguments.isEmpty()) {
-            throw new CortisolException("A todo without a description is rather like tea "
-                    + "without leaves, sir/madam.\n Do try: todo <description>");
-        }
-
-        Task task = new ToDo(arguments);
-        tasks.add(task);
-        ui.showAddedTask(task, tasks.size());
-    }
-
-    /**
-     * Adds a deadline task to the task list.
-     *
-     * @param arguments text following the "deadline" command word
-     * @throws CortisolException if the description or due date is missing
-     */
-    private void addDeadline(String arguments) throws CortisolException {
-        // Limit of 2 keeps any later "/by" as part of the due date itself.
-        String[] parts = arguments.split("/by", 2);
-        String description = parts[0].trim();
-        String deadline = parts.length > 1 ? parts[1].trim() : "";
-
-        if (description.isEmpty()) {
-            throw new CortisolException("You have not told me what is due, sir/madam.\n"
-                    + " Do try: deadline <description> /by <when>");
-        }
-        if (deadline.isEmpty()) {
-            throw new CortisolException("A deadline is of little use without a date, sir/madam.\n"
-                    + " Do try: deadline <description> /by <when>");
-        }
-
-        Task task = new Deadline(description, deadline);
-        tasks.add(task);
-        ui.showAddedTask(task, tasks.size());
-    }
-
-    /**
-     * Adds an event task to the task list.
-     *
-     * @param arguments text following the "event" command word
-     * @throws CortisolException if the description, start or end is missing
-     */
-    private void addEvent(String arguments) throws CortisolException {
-        String[] fromParts = arguments.split("/from", 2);
-        String description = fromParts[0].trim();
-        String[] toParts = fromParts.length > 1
-                ? fromParts[1].split("/to", 2)
-                : new String[0];
-        String startTime = toParts.length > 0 ? toParts[0].trim() : "";
-        String endTime = toParts.length > 1 ? toParts[1].trim() : "";
-
-        if (description.isEmpty()) {
-            throw new CortisolException("You have not told me what the occasion is, sir/madam.\n"
-                    + " Do try: event <description> /from <start> /to <end>");
-        }
-        if (startTime.isEmpty() || endTime.isEmpty()) {
-            throw new CortisolException("An event requires both a start and an end, sir/madam.\n"
-                    + " Do try: event <description> /from <start> /to <end>");
-        }
-
-        Task task = new Event(description, startTime, endTime);
-        tasks.add(task);
-        ui.showAddedTask(task, tasks.size());
-    }
-
-    /**
-     * Reads the task number out of the argument of a command that refers to a
-     * task by number.
+     * Adds an already-built task to the task list and announces it.
      * <p>
-     * Whether the number refers to an existing task is not decided here: that
-     * belongs to {@link TaskList}, which is the only place that knows how many
-     * tasks there are.
+     * The three add commands differ only in how their text is read, which is
+     * {@link Parser}'s business, so they share this one method once the task
+     * exists.
      *
-     * @param arguments text following the command word
-     * @param commandWord command the user typed, used to phrase the error messages
-     * @return the number the user typed, counting from 1
-     * @throws CortisolException if no number was given, or the text is not a number
+     * @param task the task to add
      */
-    private static int parseTaskNumber(String arguments, String commandWord)
-            throws CortisolException {
-        if (arguments.isEmpty()) {
-            throw new CortisolException("Which task shall I " + commandWord + ", sir/madam?\n"
-                    + " Do try: " + commandWord + " <task number>");
-        }
-
-        try {
-            return Integer.parseInt(arguments);
-        } catch (NumberFormatException e) {
-            throw new CortisolException("'" + arguments + "' is not a number I recognise, "
-                    + "sir/madam.\n Do try: " + commandWord + " <task number>");
-        }
+    private void addTask(Task task) {
+        tasks.add(task);
+        ui.showAddedTask(task, tasks.size());
     }
 
     /**
@@ -252,7 +165,7 @@ public class CortisolBot {
      * @throws CortisolException if the task number is missing or invalid
      */
     private void markTask(String arguments) throws CortisolException {
-        Task task = tasks.get(parseTaskNumber(arguments, "mark"), "mark");
+        Task task = tasks.get(Parser.parseTaskNumber(arguments, "mark"), "mark");
         task.markAsDone();
 
         ui.showMarkedTask(task);
@@ -265,7 +178,7 @@ public class CortisolBot {
      * @throws CortisolException if the task number is missing or invalid
      */
     private void unmarkTask(String arguments) throws CortisolException {
-        Task task = tasks.get(parseTaskNumber(arguments, "unmark"), "unmark");
+        Task task = tasks.get(Parser.parseTaskNumber(arguments, "unmark"), "unmark");
         task.markAsNotDone();
 
         ui.showUnmarkedTask(task);
@@ -280,7 +193,7 @@ public class CortisolBot {
     private void deleteTask(String arguments) throws CortisolException {
         // remove() returns the task it removed, so we can still report it
         // after it has left the list.
-        Task removedTask = tasks.remove(parseTaskNumber(arguments, "delete"), "delete");
+        Task removedTask = tasks.remove(Parser.parseTaskNumber(arguments, "delete"), "delete");
 
         ui.showRemovedTask(removedTask, tasks.size());
     }
