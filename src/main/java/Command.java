@@ -15,11 +15,11 @@ public abstract class Command {
      * needs them, so that the loop can run any command without knowing which
      * one it holds.
      *
-     * @param tasks the task list to read or change
-     * @param ui the means of telling the user what happened
-     * @param storage the file to write the task list back to
+     * @param tasks the task list to read or change.
+     * @param ui the means of telling the user what happened.
+     * @param storage the file to write the task list back to.
      * @throws CortisolException if the command cannot be carried out, with a
-     *                           message already phrased for the user
+     *                           message already phrased for the user.
      */
     public abstract void execute(TaskList tasks, Ui ui, Storage storage)
             throws CortisolException;
@@ -30,7 +30,7 @@ public abstract class Command {
      * Only leaving does; every other command says no, which is why this is
      * answered here once rather than overridden in each subclass.
      *
-     * @return true if this command ends the session
+     * @return true if this command ends the session.
      */
     public boolean isExit() {
         return false;

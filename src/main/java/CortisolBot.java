@@ -33,7 +33,7 @@ public class CortisolBot {
      * Nothing is read or printed yet; the session proper begins with
      * {@link #run()}.
      *
-     * @param filePath path to the data file
+     * @param filePath path to the data file.
      */
     public CortisolBot(String filePath) {
         this.ui = new Ui();
@@ -85,7 +85,7 @@ public class CortisolBot {
     /**
      * Starts a session.
      *
-     * @param args command line arguments, which this program does not use
+     * @param args command line arguments, which this program does not use.
      */
     public static void main(String[] args) {
         new CortisolBot(DATA_FILE_PATH).run();

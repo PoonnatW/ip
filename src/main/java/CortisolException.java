@@ -1,5 +1,5 @@
 /**
- * Represents an error specific to CortisolBot, such as an unrecognised command
+ * Represents an error specific to CortisolBot, such as an unrecognized command
  * or a command that is missing information.
  * <p>
  * The message carried by this exception is written in the bot's own voice and
@@ -11,7 +11,7 @@ public class CortisolException extends Exception {
     /**
      * Constructs an exception carrying a user-facing explanation of the error.
      *
-     * @param message explanation shown to the user
+     * @param message explanation shown to the user.
      */
     public CortisolException(String message) {
         super(message);

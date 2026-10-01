@@ -23,10 +23,10 @@ public class Parser {
      * means nothing is refused here rather than later, since nothing further can
      * usefully be done with it.
      *
-     * @param userInput one line exactly as the user typed it
-     * @return the command the user asked for
+     * @param userInput one line exactly as the user typed it.
+     * @return the command the user asked for.
      * @throws CortisolException if the command word is unknown, or its arguments
-     *                           cannot be read
+     *                           cannot be read.
      */
     public static Command parse(String userInput) throws CortisolException {
         String commandWord = parseCommandWord(userInput);
@@ -65,8 +65,8 @@ public class Parser {
      * A line of nothing but spaces yields an empty command word, which no
      * command matches, so it is refused like any other unknown instruction.
      *
-     * @param userInput one line exactly as the user typed it
-     * @return the command word, without surrounding spaces
+     * @param userInput one line exactly as the user typed it.
+     * @return the command word, without surrounding spaces.
      */
     public static String parseCommandWord(String userInput) {
         // Splitting on a run of whitespace, with a limit of 2, keeps the rest
@@ -77,9 +77,9 @@ public class Parser {
     /**
      * Returns everything after the command word.
      *
-     * @param userInput one line exactly as the user typed it
+     * @param userInput one line exactly as the user typed it.
      * @return the text following the command word, without surrounding spaces,
-     *         or an empty string if the command was typed on its own
+     *         or an empty string if the command was typed on its own.
      */
     public static String parseArguments(String userInput) {
         String[] inputParts = userInput.trim().split("\\s+", 2);
@@ -94,10 +94,10 @@ public class Parser {
      * belongs to {@link TaskList}, which is the only place that knows how many
      * tasks there are.
      *
-     * @param arguments text following the command word
-     * @param commandWord command the user typed, used to phrase the error messages
-     * @return the number the user typed, counting from 1
-     * @throws CortisolException if no number was given, or the text is not a number
+     * @param arguments text following the command word.
+     * @param commandWord command the user typed, used to phrase the error messages.
+     * @return the number the user typed, counting from 1.
+     * @throws CortisolException if no number was given, or the text is not a number.
      */
     public static int parseTaskNumber(String arguments, String commandWord)
             throws CortisolException {
@@ -117,9 +117,9 @@ public class Parser {
     /**
      * Reads the keyword out of the argument of a search.
      *
-     * @param arguments text following the command word
-     * @return the keyword to search for
-     * @throws CortisolException if nothing was given to search for
+     * @param arguments text following the command word.
+     * @return the keyword to search for.
+     * @throws CortisolException if nothing was given to search for.
      */
     public static String parseKeyword(String arguments) throws CortisolException {
         if (arguments.isEmpty()) {
@@ -133,9 +133,9 @@ public class Parser {
     /**
      * Builds a todo from the text following the "todo" command word.
      *
-     * @param arguments text following the command word
-     * @return the todo that text describes
-     * @throws CortisolException if no description was given
+     * @param arguments text following the command word.
+     * @return the todo that text describes.
+     * @throws CortisolException if no description was given.
      */
     public static ToDo parseTodo(String arguments) throws CortisolException {
         if (arguments.isEmpty()) {
@@ -149,10 +149,10 @@ public class Parser {
     /**
      * Builds a deadline from the text following the "deadline" command word.
      *
-     * @param arguments text following the command word
-     * @return the deadline that text describes
+     * @param arguments text following the command word.
+     * @return the deadline that text describes.
      * @throws CortisolException if the description or due date is missing, or
-     *                           the due date cannot be read as a date
+     *                           the due date cannot be read as a date.
      */
     public static Deadline parseDeadline(String arguments) throws CortisolException {
         // Limit of 2 keeps any later "/by" as part of the due date itself.
@@ -175,9 +175,9 @@ public class Parser {
     /**
      * Builds an event from the text following the "event" command word.
      *
-     * @param arguments text following the command word
-     * @return the event that text describes
-     * @throws CortisolException if the description, start or end is missing
+     * @param arguments text following the command word.
+     * @return the event that text describes.
+     * @throws CortisolException if the description, start or end is missing.
      */
     public static Event parseEvent(String arguments) throws CortisolException {
         String[] fromParts = arguments.split("/from", 2);

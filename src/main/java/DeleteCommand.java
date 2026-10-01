@@ -9,7 +9,7 @@ public class DeleteCommand extends Command {
     /**
      * Constructs a command that removes the given task.
      *
-     * @param taskNumber number of the task, counting from 1
+     * @param taskNumber number of the task, counting from 1.
      */
     public DeleteCommand(int taskNumber) {
         this.taskNumber = taskNumber;

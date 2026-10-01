@@ -33,7 +33,7 @@ public class Ui {
     /**
      * Reads one line of input.
      *
-     * @return the line the user typed, exactly as typed
+     * @return the line the user typed, exactly as typed.
      */
     public String readCommand() {
         return scanner.nextLine();
@@ -77,8 +77,8 @@ public class Ui {
      * Says nothing at all when there was nothing to report, so that a first run
      * opens with the greeting alone.
      *
-     * @param taskCount number of tasks that were loaded
-     * @param skippedLineCount number of lines that could not be understood
+     * @param taskCount number of tasks that were loaded.
+     * @param skippedLineCount number of lines that could not be understood.
      */
     public void showLoadReport(int taskCount, int skippedLineCount) {
         if (skippedLineCount > 0) {
@@ -98,7 +98,7 @@ public class Ui {
      * Prints an explanation of something that went wrong.
      *
      * @param message explanation already phrased for the user, as the messages
-     *                carried by {@link CortisolException} are
+     *                carried by {@link CortisolException} are.
      */
     public void showError(String message) {
         System.out.println(" " + message);
@@ -108,7 +108,7 @@ public class Ui {
     /**
      * Lists all tasks currently in the task list.
      *
-     * @param tasks list containing the tasks
+     * @param tasks list containing the tasks.
      */
     public void showTaskList(ArrayList<Task> tasks) {
         if (tasks.isEmpty()) {
@@ -133,8 +133,8 @@ public class Ui {
      * expect. Showing the list numbers instead would need the matches to carry
      * their positions, which a plain list of tasks does not.
      *
-     * @param matches the tasks that matched, in list order
-     * @param keyword what was searched for, quoted back to the user
+     * @param matches the tasks that matched, in list order.
+     * @param keyword what was searched for, quoted back to the user.
      */
     public void showMatchingTasks(ArrayList<Task> matches, String keyword) {
         if (matches.isEmpty()) {
@@ -153,8 +153,8 @@ public class Ui {
     /**
      * Announces a newly added task and the resulting size of the list.
      *
-     * @param task the task that was just added
-     * @param taskCount number of tasks in the list after the addition
+     * @param task the task that was just added.
+     * @param taskCount number of tasks in the list after the addition.
      */
     public void showAddedTask(Task task, int taskCount) {
         System.out.printf(
@@ -167,7 +167,7 @@ public class Ui {
     /**
      * Announces a task that has just been marked done.
      *
-     * @param task the task that was marked
+     * @param task the task that was marked.
      */
     public void showMarkedTask(Task task) {
         System.out.println("Consider it done, sir/madam:");
@@ -178,7 +178,7 @@ public class Ui {
     /**
      * Announces a task that has just been marked not done.
      *
-     * @param task the task that was unmarked
+     * @param task the task that was unmarked.
      */
     public void showUnmarkedTask(Task task) {
         System.out.println("Very well, sir/madam. I have returned it to the undone:");
@@ -189,8 +189,8 @@ public class Ui {
     /**
      * Announces a removed task and the resulting size of the list.
      *
-     * @param removedTask the task that was removed
-     * @param taskCount number of tasks left in the list
+     * @param removedTask the task that was removed.
+     * @param taskCount number of tasks left in the list.
      */
     public void showRemovedTask(Task removedTask, int taskCount) {
         System.out.println("Consider it forgotten, sir/madam:");
