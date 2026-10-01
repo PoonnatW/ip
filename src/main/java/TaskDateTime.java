@@ -48,8 +48,8 @@ public class TaskDateTime {
      * Constructs a moment. Private: the way in is {@link #parse(String)}, which
      * is the only thing that decides whether an hour was given.
      *
-     * @param dateTime the moment
-     * @param hasTime whether an hour was given
+     * @param dateTime the moment.
+     * @param hasTime whether an hour was given.
      */
     private TaskDateTime(LocalDateTime dateTime, boolean hasTime) {
         this.dateTime = dateTime;
@@ -62,9 +62,9 @@ public class TaskDateTime {
      * A date with an hour is tried first, since {@code 2019-12-02 1800} also
      * begins with something that looks like a date on its own.
      *
-     * @param text the date, with or without an hour
-     * @return the moment that text describes
-     * @throws CortisolException if the text is not a date this bot can read
+     * @param text the date, with or without an hour.
+     * @return the moment that text describes.
+     * @throws CortisolException if the text is not a date this bot can read.
      */
     public static TaskDateTime parse(String text) throws CortisolException {
         String trimmedText = text.trim();
@@ -88,7 +88,7 @@ public class TaskDateTime {
      * Returns this moment as it should be written to the data file, in the same
      * shape the user typed it.
      *
-     * @return the date, followed by the hour if one was given
+     * @return the date, followed by the hour if one was given.
      */
     public String toFileFormat() {
         return hasTime ? dateTime.format(TYPED_DATE_TIME) : dateTime.toLocalDate().toString();

@@ -9,7 +9,7 @@ public class MarkCommand extends Command {
     /**
      * Constructs a command that marks the given task as done.
      *
-     * @param taskNumber number of the task, counting from 1
+     * @param taskNumber number of the task, counting from 1.
      */
     public MarkCommand(int taskNumber) {
         this.taskNumber = taskNumber;

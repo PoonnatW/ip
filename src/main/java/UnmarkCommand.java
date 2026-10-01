@@ -9,7 +9,7 @@ public class UnmarkCommand extends Command {
     /**
      * Constructs a command that marks the given task as not done.
      *
-     * @param taskNumber number of the task, counting from 1
+     * @param taskNumber number of the task, counting from 1.
      */
     public UnmarkCommand(int taskNumber) {
         this.taskNumber = taskNumber;

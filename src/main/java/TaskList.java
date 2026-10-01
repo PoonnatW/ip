@@ -24,7 +24,7 @@ public class TaskList {
     /**
      * Adds a task to the end of the list.
      *
-     * @param task the task to add
+     * @param task the task to add.
      */
     public void add(Task task) {
         tasks.add(task);
@@ -33,7 +33,7 @@ public class TaskList {
     /**
      * Adds every task of another collection to the end of the list.
      *
-     * @param newTasks the tasks to add, such as those just read from the data file
+     * @param newTasks the tasks to add, such as those just read from the data file.
      */
     public void addAll(ArrayList<Task> newTasks) {
         tasks.addAll(newTasks);
@@ -42,7 +42,7 @@ public class TaskList {
     /**
      * Returns how many tasks the list holds.
      *
-     * @return number of tasks in the list
+     * @return number of tasks in the list.
      */
     public int size() {
         return tasks.size();
@@ -51,10 +51,10 @@ public class TaskList {
     /**
      * Returns the task the user refers to by number.
      *
-     * @param taskNumber number as the user typed it, counting from 1
-     * @param commandWord command the user typed, used to phrase the error message
-     * @return the task that number refers to
-     * @throws CortisolException if the number refers to no task in the list
+     * @param taskNumber number as the user typed it, counting from 1.
+     * @param commandWord command the user typed, used to phrase the error message.
+     * @return the task that number refers to.
+     * @throws CortisolException if the number refers to no task in the list.
      */
     public Task get(int taskNumber, String commandWord) throws CortisolException {
         checkTaskNumber(taskNumber, commandWord);
@@ -64,11 +64,11 @@ public class TaskList {
     /**
      * Removes the task the user refers to by number.
      *
-     * @param taskNumber number as the user typed it, counting from 1
-     * @param commandWord command the user typed, used to phrase the error message
+     * @param taskNumber number as the user typed it, counting from 1.
+     * @param commandWord command the user typed, used to phrase the error message.
      * @return the task that was removed, so that it can still be reported after
-     *         it has left the list
-     * @throws CortisolException if the number refers to no task in the list
+     *         it has left the list.
+     * @throws CortisolException if the number refers to no task in the list.
      */
     public Task remove(int taskNumber, String commandWord) throws CortisolException {
         checkTaskNumber(taskNumber, commandWord);
@@ -81,8 +81,8 @@ public class TaskList {
      * The matches are a new list rather than a view, so the task list itself is
      * untouched by a search, and they keep the order they have here.
      *
-     * @param keyword word or phrase to look for
-     * @return the matching tasks, in list order, or an empty list if none match
+     * @param keyword word or phrase to look for.
+     * @return the matching tasks, in list order, or an empty list if none match.
      */
     public ArrayList<Task> find(String keyword) {
         ArrayList<Task> matches = new ArrayList<>();
@@ -100,7 +100,7 @@ public class TaskList {
      * Callers are expected to read the list and not to change it: adding and
      * removing belong to this class, which is where the bounds are checked.
      *
-     * @return the tasks, in order
+     * @return the tasks, in order.
      */
     public ArrayList<Task> asArrayList() {
         return tasks;
@@ -112,9 +112,9 @@ public class TaskList {
      * An empty list is reported differently from a number out of range, since
      * "your list runs from 1 to 0" would be no help at all.
      *
-     * @param taskNumber number as the user typed it, counting from 1
-     * @param commandWord command the user typed, used to phrase the error message
-     * @throws CortisolException if the number refers to no task in the list
+     * @param taskNumber number as the user typed it, counting from 1.
+     * @param commandWord command the user typed, used to phrase the error message.
+     * @throws CortisolException if the number refers to no task in the list.
      */
     private void checkTaskNumber(int taskNumber, String commandWord)
             throws CortisolException {

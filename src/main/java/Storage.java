@@ -41,7 +41,7 @@ public class Storage {
      *                 run from, so that it works on any computer. It may be
      *                 written with "/" separators whatever the operating
      *                 system, since {@link Paths#get(String, String...)}
-     *                 converts them to the local form
+     *                 converts them to the local form.
      */
     public Storage(String filePath) {
         this.dataFile = Paths.get(filePath);
@@ -56,8 +56,8 @@ public class Storage {
      * the rest of their list; how many were skipped is available afterwards
      * from {@link #getSkippedLineCount()}.
      *
-     * @return the tasks that were loaded, or an empty list if there were none
-     * @throws CortisolException if the file exists but cannot be read
+     * @return the tasks that were loaded, or an empty list if there were none.
+     * @throws CortisolException if the file exists but cannot be read.
      */
     public ArrayList<Task> load() throws CortisolException {
         skippedLineCount = 0;
@@ -94,7 +94,7 @@ public class Storage {
      * reason to abandon the load: the caller needs the tasks that were
      * understood <em>and</em> the number that were not.
      *
-     * @return number of lines skipped by the most recent call to load
+     * @return number of lines skipped by the most recent call to load.
      */
     public int getSkippedLineCount() {
         return skippedLineCount;
@@ -103,9 +103,9 @@ public class Storage {
     /**
      * Rebuilds a single task from one line of the data file.
      *
-     * @param line one line of the data file
-     * @return the task that line describes
-     * @throws CortisolException if the line does not have the expected shape
+     * @param line one line of the data file.
+     * @return the task that line describes.
+     * @throws CortisolException if the line does not have the expected shape.
      */
     private static Task parseTask(String line) throws CortisolException {
         // The separator is a literal "|", which must be escaped because
@@ -156,8 +156,8 @@ public class Storage {
     /**
      * Writes the whole task list to disk, replacing whatever was there before.
      *
-     * @param tasks list containing the tasks
-     * @throws CortisolException if the list cannot be written to the file
+     * @param tasks list containing the tasks.
+     * @throws CortisolException if the list cannot be written to the file.
      */
     public void save(ArrayList<Task> tasks) throws CortisolException {
         StringBuilder content = new StringBuilder();
