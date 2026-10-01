@@ -219,6 +219,10 @@ Honest record of what is missing, so it is not mistaken for something that alrea
 * **`.gitignore` still mentions `text-ui-test/`**, which is the course template's harness layout. This
   repository never rebuilt that folder and uses `test/` instead; the stale lines are harmless and have
   been left alone.
+* **A `|` in a description corrupts the task when it is reloaded.** `Storage` separates fields with
+  `|` and does not escape it, so `todo read | book` saves correctly but comes back as `read` on the
+  next run, silently losing the rest. Recorded by TC-17 and TC-18 in the test plan; to be fixed in
+  whichever increment next touches `Storage`.
 * **`docs/README.md` is still the unedited template** — placeholder headings, no screenshot, no
   product intro.
 * **Voice is not yet consistent.** Several messages in `CortisolBot.java` are still the stock
