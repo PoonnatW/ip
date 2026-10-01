@@ -25,7 +25,7 @@ public class CortisolBot {
             return;
         }
 
-        System.out.println("Here are the tasks in your list:");
+        System.out.println("Your tasks, sir/madam, as they presently stand:");
         for (int i = 0; i < tasks.size(); i++) {
             System.out.printf("%d.%s\n", i + 1, tasks.get(i));
         }
@@ -40,8 +40,8 @@ public class CortisolBot {
      */
     public static void printAddedTask(Task task, int taskCount) {
         System.out.printf(
-                "Got It. I've added this task:\n\t%s\n"
-                        + " Now you have %d tasks in the list.\n",
+                "Very good, sir/madam. I have added the following:\n\t%s\n"
+                        + " That makes %d in your keeping.\n",
                 task, taskCount);
         printLine();
     }
@@ -172,7 +172,7 @@ public class CortisolBot {
         Task task = tasks.get(taskIndex);
         task.markAsDone();
 
-        System.out.println("Nice! I've marked this task as done:");
+        System.out.println("Consider it done, sir/madam:");
         System.out.printf("\t%s\n", task);
         printLine();
     }
@@ -190,7 +190,7 @@ public class CortisolBot {
         Task task = tasks.get(taskIndex);
         task.markAsNotDone();
 
-        System.out.println("Ok, I've marked this task as not done yet:");
+        System.out.println("Very well, sir/madam. I have returned it to the undone:");
         System.out.printf("\t%s\n", task);
         printLine();
     }
@@ -209,9 +209,9 @@ public class CortisolBot {
         // after it has left the list.
         Task removedTask = tasks.remove(taskIndex);
 
-        System.out.println("Noted. I've removed this task:");
+        System.out.println("Consider it forgotten, sir/madam:");
         System.out.printf("\t%s\n", removedTask);
-        System.out.printf(" Now you have %d tasks in the list.\n", tasks.size());
+        System.out.printf(" That leaves %d in your keeping.\n", tasks.size());
         printLine();
     }
 

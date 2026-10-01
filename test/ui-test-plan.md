@@ -18,31 +18,28 @@ Rules for writing a test case:
 
 * The last input line must be `bye`. Without it the program waits forever for more input.
 * `{{greeting}}` and `{{farewell}}` on a line of their own stand for the blocks under **Snippets**,
-  so that the banner need not be repeated in all eleven test cases.
-* Indentation is compared exactly, so the task lines printed after `added`, `marked` and `removed`
-  must carry their leading **tab**. Trailing spaces and trailing blank lines are ignored, since they
-  cannot be seen on screen and most editors strip them.
+  so that the banner need not be repeated in every test case.
+* Indentation is compared exactly, so the task line printed by an add, a `mark`, an `unmark` or a
+  `delete` must carry its leading **tab**. Trailing spaces and trailing blank lines are ignored,
+  since they cannot be seen on screen and most editors strip them.
 * Each test case runs in its own folder under `_temp/ui-test-runs/`, so the task list saved by one
   test case can never reach another, and the real `data/cortisolbot.txt` is never touched.
 
 ## Known deviations recorded here on purpose
 
-These two are current behaviour, deliberately captured so that the day they are changed, the test
-session fails and this plan must be updated to match. They are **not** endorsements.
+These are current behaviour, deliberately captured so that the day they are changed, the test session
+fails and this plan must be updated to match. They are **not** endorsements.
 
 1. `list` prints its tasks with no leading tab (`1.[T][ ] read book`), while `mark`, `unmark`,
    `delete` and the add commands all indent theirs with a tab. AGENTS.md calls for the tab.
-2. The add, mark, unmark, delete and list replies still use the course's stock wordings
-   (`Got It. I've added this task:`, `Nice! ...`, `Ok, ...`, `Noted. ...`, `Here are the tasks in
-   your list:`) rather than the butler voice AGENTS.md requires.
-3. A description containing the data file's own separator, `|`, is saved faithfully but comes back
+2. A description containing the data file's own separator, `|`, is saved faithfully but comes back
    truncated at the separator on the next run, silently losing everything after it. TC-17 records the
-   saving, TC-18 records the loss. Unlike the first two this is a genuine defect rather than a
-   cosmetic one, and the fix (escaping the separator, or splitting with a limit) belongs in whichever
+   saving, TC-18 records the loss. Unlike the first this is a genuine defect rather than a cosmetic
+   one, and the fix (escaping the separator, or splitting with a limit) belongs in whichever
    increment touches `Storage` next.
 
-The first two are to be fixed before the `A-MoreOOP` increment. When any of the three is fixed,
-update the affected expected output here in the same commit as the code change.
+The first is to be fixed before the `A-MoreOOP` increment. When either is fixed, update the affected
+expected output here in the same commit as the code change.
 
 ## A note on trailing spaces
 
@@ -136,22 +133,22 @@ bye
 ```text
 {{greeting}}
 -------------------------------------------------------
-Got It. I've added this task:
+Very good, sir/madam. I have added the following:
 	[T][ ] read book
- Now you have 1 tasks in the list.
+ That makes 1 in your keeping.
 -------------------------------------------------------
 -------------------------------------------------------
-Got It. I've added this task:
+Very good, sir/madam. I have added the following:
 	[D][ ] return book (by: June 6th)
- Now you have 2 tasks in the list.
+ That makes 2 in your keeping.
 -------------------------------------------------------
 -------------------------------------------------------
-Got It. I've added this task:
+Very good, sir/madam. I have added the following:
 	[E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
- Now you have 3 tasks in the list.
+ That makes 3 in your keeping.
 -------------------------------------------------------
 -------------------------------------------------------
-Here are the tasks in your list:
+Your tasks, sir/madam, as they presently stand:
 1.[T][ ] read book
 2.[D][ ] return book (by: June 6th)
 3.[E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
@@ -188,24 +185,24 @@ bye
 ```text
 {{greeting}}
 -------------------------------------------------------
-Got It. I've added this task:
+Very good, sir/madam. I have added the following:
 	[T][ ] read book
- Now you have 1 tasks in the list.
+ That makes 1 in your keeping.
 -------------------------------------------------------
 -------------------------------------------------------
-Nice! I've marked this task as done:
+Consider it done, sir/madam:
 	[T][X] read book
 -------------------------------------------------------
 -------------------------------------------------------
-Here are the tasks in your list:
+Your tasks, sir/madam, as they presently stand:
 1.[T][X] read book
 -------------------------------------------------------
 -------------------------------------------------------
-Ok, I've marked this task as not done yet:
+Very well, sir/madam. I have returned it to the undone:
 	[T][ ] read book
 -------------------------------------------------------
 -------------------------------------------------------
-Here are the tasks in your list:
+Your tasks, sir/madam, as they presently stand:
 1.[T][ ] read book
 -------------------------------------------------------
 {{farewell}}
@@ -237,22 +234,22 @@ bye
 ```text
 {{greeting}}
 -------------------------------------------------------
-Got It. I've added this task:
+Very good, sir/madam. I have added the following:
 	[T][ ] read book
- Now you have 1 tasks in the list.
+ That makes 1 in your keeping.
 -------------------------------------------------------
 -------------------------------------------------------
-Got It. I've added this task:
+Very good, sir/madam. I have added the following:
 	[T][ ] return book
- Now you have 2 tasks in the list.
+ That makes 2 in your keeping.
 -------------------------------------------------------
 -------------------------------------------------------
-Noted. I've removed this task:
+Consider it forgotten, sir/madam:
 	[T][ ] read book
- Now you have 1 tasks in the list.
+ That leaves 1 in your keeping.
 -------------------------------------------------------
 -------------------------------------------------------
-Here are the tasks in your list:
+Your tasks, sir/madam, as they presently stand:
 1.[T][ ] return book
 -------------------------------------------------------
 {{farewell}}
@@ -363,9 +360,9 @@ bye
  Your list is presently empty, sir/madam. There is nothing to mark just yet.
 -------------------------------------------------------
 -------------------------------------------------------
-Got It. I've added this task:
+Very good, sir/madam. I have added the following:
 	[T][ ] read book
- Now you have 1 tasks in the list.
+ That makes 1 in your keeping.
 -------------------------------------------------------
 -------------------------------------------------------
  I keep no task numbered 5, sir/madam.
@@ -401,7 +398,7 @@ bye
  I have retrieved 3 task(s) from my records, sir/madam.
 -------------------------------------------------------
 -------------------------------------------------------
-Here are the tasks in your list:
+Your tasks, sir/madam, as they presently stand:
 1.[T][X] read book
 2.[D][ ] return book (by: June 6th)
 3.[E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
@@ -437,7 +434,7 @@ bye
  I have retrieved 1 task(s) from my records, sir/madam.
 -------------------------------------------------------
 -------------------------------------------------------
-Here are the tasks in your list:
+Your tasks, sir/madam, as they presently stand:
 1.[T][X] read book
 -------------------------------------------------------
 {{farewell}}
@@ -461,12 +458,12 @@ bye
 ```text
 {{greeting}}
 -------------------------------------------------------
-Got It. I've added this task:
+Very good, sir/madam. I have added the following:
 	[T][ ] walk the dog
- Now you have 1 tasks in the list.
+ That makes 1 in your keeping.
 -------------------------------------------------------
 -------------------------------------------------------
-Here are the tasks in your list:
+Your tasks, sir/madam, as they presently stand:
 1.[T][ ] walk the dog
 -------------------------------------------------------
 {{farewell}}
@@ -503,21 +500,21 @@ bye
 ```text
 {{greeting}}
 -------------------------------------------------------
-Got It. I've added this task:
+Very good, sir/madam. I have added the following:
 	[T][ ] read book
- Now you have 1 tasks in the list.
+ That makes 1 in your keeping.
 -------------------------------------------------------
 -------------------------------------------------------
-Got It. I've added this task:
+Very good, sir/madam. I have added the following:
 	[D][ ] return book (by: June 6th)
- Now you have 2 tasks in the list.
+ That makes 2 in your keeping.
 -------------------------------------------------------
 -------------------------------------------------------
  A todo without a description is rather like tea without leaves, sir/madam.
  Do try: todo <description>
 -------------------------------------------------------
 -------------------------------------------------------
-Here are the tasks in your list:
+Your tasks, sir/madam, as they presently stand:
 1.[T][ ] read book
 2.[D][ ] return book (by: June 6th)
 -------------------------------------------------------
@@ -526,7 +523,7 @@ Here are the tasks in your list:
  Your list runs from 1 to 2.
 -------------------------------------------------------
 -------------------------------------------------------
-Here are the tasks in your list:
+Your tasks, sir/madam, as they presently stand:
 1.[T][ ] read book
 2.[D][ ] return book (by: June 6th)
 -------------------------------------------------------
@@ -535,7 +532,7 @@ Here are the tasks in your list:
  Your list runs from 1 to 2.
 -------------------------------------------------------
 -------------------------------------------------------
-Here are the tasks in your list:
+Your tasks, sir/madam, as they presently stand:
 1.[T][ ] read book
 2.[D][ ] return book (by: June 6th)
 -------------------------------------------------------
@@ -577,55 +574,55 @@ bye
 ```text
 {{greeting}}
 -------------------------------------------------------
-Got It. I've added this task:
+Very good, sir/madam. I have added the following:
 	[T][ ] read book
- Now you have 1 tasks in the list.
+ That makes 1 in your keeping.
 -------------------------------------------------------
 -------------------------------------------------------
-Got It. I've added this task:
+Very good, sir/madam. I have added the following:
 	[T][ ] return book
- Now you have 2 tasks in the list.
+ That makes 2 in your keeping.
 -------------------------------------------------------
 -------------------------------------------------------
-Got It. I've added this task:
+Very good, sir/madam. I have added the following:
 	[T][ ] buy milk
- Now you have 3 tasks in the list.
+ That makes 3 in your keeping.
 -------------------------------------------------------
 -------------------------------------------------------
  I keep no task numbered 4, sir/madam.
  Your list runs from 1 to 3.
 -------------------------------------------------------
 -------------------------------------------------------
-Nice! I've marked this task as done:
+Consider it done, sir/madam:
 	[T][X] read book
 -------------------------------------------------------
 -------------------------------------------------------
-Nice! I've marked this task as done:
+Consider it done, sir/madam:
 	[T][X] buy milk
 -------------------------------------------------------
 -------------------------------------------------------
-Here are the tasks in your list:
+Your tasks, sir/madam, as they presently stand:
 1.[T][X] read book
 2.[T][ ] return book
 3.[T][X] buy milk
 -------------------------------------------------------
 -------------------------------------------------------
-Noted. I've removed this task:
+Consider it forgotten, sir/madam:
 	[T][X] buy milk
- Now you have 2 tasks in the list.
+ That leaves 2 in your keeping.
 -------------------------------------------------------
 -------------------------------------------------------
-Here are the tasks in your list:
+Your tasks, sir/madam, as they presently stand:
 1.[T][X] read book
 2.[T][ ] return book
 -------------------------------------------------------
 -------------------------------------------------------
-Noted. I've removed this task:
+Consider it forgotten, sir/madam:
 	[T][X] read book
- Now you have 1 tasks in the list.
+ That leaves 1 in your keeping.
 -------------------------------------------------------
 -------------------------------------------------------
-Here are the tasks in your list:
+Your tasks, sir/madam, as they presently stand:
 1.[T][ ] return book
 -------------------------------------------------------
 {{farewell}}
@@ -659,9 +656,9 @@ bye
 ```text
 {{greeting}}
 -------------------------------------------------------
-Got It. I've added this task:
+Very good, sir/madam. I have added the following:
 	[T][ ] read book
- Now you have 1 tasks in the list.
+ That makes 1 in your keeping.
 -------------------------------------------------------
 -------------------------------------------------------
  I keep no task numbered 0, sir/madam.
@@ -680,7 +677,7 @@ Got It. I've added this task:
  Do try: mark <task number>
 -------------------------------------------------------
 -------------------------------------------------------
-Here are the tasks in your list:
+Your tasks, sir/madam, as they presently stand:
 1.[T][ ] read book
 -------------------------------------------------------
 {{farewell}}
@@ -715,32 +712,32 @@ bye
 ```text
 {{greeting}}
 -------------------------------------------------------
-Got It. I've added this task:
+Very good, sir/madam. I have added the following:
 	[T][ ] read book
- Now you have 1 tasks in the list.
+ That makes 1 in your keeping.
 -------------------------------------------------------
 -------------------------------------------------------
-Nice! I've marked this task as done:
+Consider it done, sir/madam:
 	[T][X] read book
 -------------------------------------------------------
 -------------------------------------------------------
-Nice! I've marked this task as done:
+Consider it done, sir/madam:
 	[T][X] read book
 -------------------------------------------------------
 -------------------------------------------------------
-Here are the tasks in your list:
+Your tasks, sir/madam, as they presently stand:
 1.[T][X] read book
 -------------------------------------------------------
 -------------------------------------------------------
-Ok, I've marked this task as not done yet:
+Very well, sir/madam. I have returned it to the undone:
 	[T][ ] read book
 -------------------------------------------------------
 -------------------------------------------------------
-Ok, I've marked this task as not done yet:
+Very well, sir/madam. I have returned it to the undone:
 	[T][ ] read book
 -------------------------------------------------------
 -------------------------------------------------------
-Here are the tasks in your list:
+Your tasks, sir/madam, as they presently stand:
 1.[T][ ] read book
 -------------------------------------------------------
 {{farewell}}
@@ -772,17 +769,17 @@ bye
 ```text
 {{greeting}}
 -------------------------------------------------------
-Got It. I've added this task:
+Very good, sir/madam. I have added the following:
 	[T][ ] deadline the report /by tomorrow
- Now you have 1 tasks in the list.
+ That makes 1 in your keeping.
 -------------------------------------------------------
 -------------------------------------------------------
-Got It. I've added this task:
+Very good, sir/madam. I have added the following:
 	[D][ ] submit form (by: next /by week)
- Now you have 2 tasks in the list.
+ That makes 2 in your keeping.
 -------------------------------------------------------
 -------------------------------------------------------
-Here are the tasks in your list:
+Your tasks, sir/madam, as they presently stand:
 1.[T][ ] deadline the report /by tomorrow
 2.[D][ ] submit form (by: next /by week)
 -------------------------------------------------------
@@ -814,12 +811,12 @@ bye
 ```text
 {{greeting}}
 -------------------------------------------------------
-Got It. I've added this task:
+Very good, sir/madam. I have added the following:
 	[T][ ] read | book
- Now you have 1 tasks in the list.
+ That makes 1 in your keeping.
 -------------------------------------------------------
 -------------------------------------------------------
-Here are the tasks in your list:
+Your tasks, sir/madam, as they presently stand:
 1.[T][ ] read | book
 -------------------------------------------------------
 {{farewell}}
@@ -857,7 +854,7 @@ bye
  I have retrieved 1 task(s) from my records, sir/madam.
 -------------------------------------------------------
 -------------------------------------------------------
-Here are the tasks in your list:
+Your tasks, sir/madam, as they presently stand:
 1.[T][ ] read
 -------------------------------------------------------
 {{farewell}}
@@ -882,12 +879,12 @@ bye
 ```text
 {{greeting}}
 -------------------------------------------------------
-Got It. I've added this task:
+Very good, sir/madam. I have added the following:
 	[D][ ] return the book (by: June 6th)
- Now you have 1 tasks in the list.
+ That makes 1 in your keeping.
 -------------------------------------------------------
 -------------------------------------------------------
-Here are the tasks in your list:
+Your tasks, sir/madam, as they presently stand:
 1.[D][ ] return the book (by: June 6th)
 -------------------------------------------------------
 {{farewell}}
@@ -927,7 +924,7 @@ bye
  I have retrieved 1 task(s) from my records, sir/madam.
 -------------------------------------------------------
 -------------------------------------------------------
-Here are the tasks in your list:
+Your tasks, sir/madam, as they presently stand:
 1.[T][X] read book
 -------------------------------------------------------
 {{farewell}}
@@ -987,16 +984,16 @@ bye
 ```text
 {{greeting}}
 -------------------------------------------------------
-Got It. I've added this task:
+Very good, sir/madam. I have added the following:
 	[T][ ] read book
- Now you have 1 tasks in the list.
+ That makes 1 in your keeping.
 -------------------------------------------------------
 -------------------------------------------------------
-Nice! I've marked this task as done:
+Consider it done, sir/madam:
 	[T][X] read book
 -------------------------------------------------------
 -------------------------------------------------------
-Here are the tasks in your list:
+Your tasks, sir/madam, as they presently stand:
 1.[T][X] read book
 -------------------------------------------------------
 {{farewell}}
