@@ -29,11 +29,21 @@ root, since tools such as Gradle expect it there.
 
 | File | Role |
 |---|---|
-| `CortisolBot.java` | Entry point. Banner, input loop, command dispatch, and most printing. |
-| `Storage.java` | Loads and saves the task list at `data/cortisolbot.txt`. |
+| `CortisolBot.java` | Entry point. Holds the Ui, Storage and TaskList, and runs the read-and-execute loop. |
+| `Parser.java` | Turns a typed line into a `Command`. Reads command words, task numbers, and the `/by` `/from` `/to` markers. Static methods only. |
+| `Command.java` | Abstract base: `execute(TaskList, Ui, Storage)` and `isExit()`. |
+| `AddCommand.java`, `MarkCommand.java`, `UnmarkCommand.java`, `DeleteCommand.java`, `ListCommand.java`, `ExitCommand.java` | One class per instruction. Each command that alters the list saves it itself. |
+| `Ui.java` | Every read from the keyboard and every write to the screen, including the banner and the separator. |
+| `TaskList.java` | The tasks, and the only place that maps a task number the user typed onto a position in the list. |
+| `Storage.java` | Loads and saves the task list at `data/cortisolbot.txt`. Throws `CortisolException` rather than printing. |
 | `Task.java` | Base task: description, done-status, file encoding. |
 | `ToDo.java`, `Deadline.java`, `Event.java` | The three task types. |
 | `CortisolException.java` | Errors whose messages are already phrased for the user. |
+
+Two invariants came out of the `A-MoreOOP` increment and are worth preserving:
+
+* **Nothing outside `Ui` touches `System.out` or `Scanner`.** A grep for either outside that file should come back empty.
+* **Nothing outside `TaskList` converts a task number into a list index.** The off-by-one lives in one place.
 
 Supported commands: `list`, `todo`, `deadline … /by …`, `event … /from … /to …`, `mark`, `unmark`,
 `delete`, `bye`.
@@ -90,6 +100,18 @@ A failing test case means either the code is wrong, or the behaviour changed del
 plan is now out of date. Settle which it is and fix that one. Never edit an expected output merely to
 make a test case pass, and never write an expected output by pasting in what the program actually
 printed — reason it out from the source and from the voice and formatting rules below.
+
+### Do not fall back to something easier
+
+If the runner itself will not run — a broken plan file, a Python error, a path that has moved — **fix
+the runner or the plan**. Do not substitute a hand-run of the program and an eyeballed comparison,
+and do not declare the behaviour verified on the strength of a partial run. The whole value of the
+session is that it is exact and repeatable; an improvised check that happens to pass is worth less
+than no check, because it reads like one in the transcript.
+
+The same goes for the checks around it. Say which command produced a result, and if a command errored
+or a check did not actually run, say so rather than reporting the conclusion you expected from it. A
+grep that failed on its own arguments has told you nothing.
 
 ## The bot's voice — a wealthy household's butler
 
