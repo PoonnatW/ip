@@ -127,6 +127,10 @@ Rules for any string the user can see:
   fragments and exclamations are not.
 * Dry understatement over enthusiasm. At most one flourish per message, and keep messages to one or
   two lines — the butler is composed, not chatty.
+* **Never write `task(s)` or `line(s)`.** The butler is speaking aloud and nobody says
+  "task-bracket-s". Where a message carries a count, phrase it so that one and many both read
+  correctly — `That makes 1 in your keeping`, `I have retrieved 1 of your tasks` — rather than
+  adding pluralization logic or an `(s)`.
 * Errors explain the misunderstanding in character, then offer the correct form, e.g.
   `Do try: deadline <description> /by <when>`.
 * **Never ship the stock wordings from the course's starter material** — `"Got it. I've added this
@@ -140,7 +144,7 @@ Greetings sir/madam, CortisolBot humbly at your service.
 Your list is presently empty, sir/madam. A rare luxury.
 A todo without a description is rather like tea without leaves, sir/madam.
 I do beg your pardon, sir/madam, but that instruction is not in my repertoire.
-Tonight has been an honour. I shall bid thee farewell!
+Tonight has been an honour, sir/madam. I shall bid you good evening.
 Very good, sir/madam. I have added the following:
 Consider it done, sir/madam:
 Very well, sir/madam. I have returned it to the undone:
