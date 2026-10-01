@@ -22,6 +22,11 @@ The script compiles the sources afresh into `_temp/ui-test-classes`, then for ea
 test case's expected output. `_temp/` is gitignored, so nothing it writes can enter a commit, and the
 user's real `data/cortisolbot.txt` is never read or written.
 
+**The script exits non-zero when a test case fails.** Check the exit status rather than trusting the
+last lines of output: piping through `tail` or `head` discards the status and can make a failed
+session look finished. In Git Bash, `python test/run-ui-tests.py; echo "EXIT: $?"`, or
+`${PIPESTATUS[0]}` when piping.
+
 Useful variations:
 
 * One test case while fixing it: `python test/run-ui-tests.py --only TC-03`
@@ -29,14 +34,18 @@ Useful variations:
 
 ## Report the result
 
-Always show the user the record of the session, not just a verdict — the point of the exercise is
-that the input and output can be inspected. The script prints, for every test case, the lines typed
-and the console output they produced, and writes the same record to `_temp/ui-test-session.txt`.
+Show the user the record of the session, not just a verdict — the point of the exercise is that the
+input and output can be inspected. The script prints, for every test case, the lines typed and the
+console output they produced, and writes the same record to `_temp/ui-test-session.txt`.
 
-* **All test cases passed** — say so, give the number of test cases, and show the transcript or point
-  to `_temp/ui-test-session.txt`.
-* **A test case failed** — the session stops there by design; later test cases are not run. Report
-  the test case that failed, its aim, and the expected and actual outputs the script printed, then
+The full record is now several hundred lines, most of it the banner repeated once per test case, so
+paste it only when it is short enough to be read:
+
+* **All test cases passed** — say so with the number of test cases, show the list of `PASSED` lines,
+  and point to `_temp/ui-test-session.txt`. Quote one test case in full only if it is the one the
+  user is interested in.
+* **A test case failed** — the session stops there by design and later test cases do not run. Show
+  that test case's aim, its input, and the expected and actual outputs the script printed, then
   diagnose. Do not re-run the suite hoping for a different answer, and never edit the expected output
   to match broken behaviour.
 
@@ -65,12 +74,47 @@ block compared after it exits. Points worth repeating:
   test case that is a copy of what the program happens to do cannot fail, and proves nothing.
 * Give each test case an aim that says what is being checked, not what is being typed.
 
-## Keep the plan honest
+## Writing test cases that can actually fail
 
-Where current behaviour contradicts AGENTS.md, the plan records the current behaviour and says so
-under "Known deviations recorded here on purpose". That is deliberate: the test case then fails on
-the day the deviation is fixed, which is exactly when the plan should be revisited. Add to that
-section rather than quietly encoding a deviation as if it were correct.
+These rules come from injecting deliberate bugs and seeing which ones the suite let through. Each one
+corresponds to a bug that escaped until the rule was applied.
+
+* **Interleave the good with the bad.** After every command the bot refuses, display the state and
+  check it is untouched — `list`, and an `### Expected data file` block at the end. A command that
+  corrupts the list *before* noticing the input was wrong produces a perfectly correct error message,
+  so the error message alone proves nothing. TC-12 exists for this.
+* **Test every boundary of a numeric argument**: the first (`1`), the last (`n`), **one past the last
+  (`n + 1`)**, zero, a negative number, something that is not a number at all, and something too
+  large for `int`. `n + 1` is the one everybody forgets, and it is the one that turns a polite
+  refusal into a crash. TC-13 and TC-14 cover these.
+* **Put something after whatever is under test.** Trailing spaces are ignored when outputs are
+  compared, so a stray space at the end of a line is invisible. Check a description's boundaries
+  through a deadline or an event, where the description is followed by ` (by: ...)` on screen and
+  ` | ` in the data file and a stray space shows up as a doubled space mid-line. TC-19 exists for
+  this.
+* **Separate words with a tab, not only spaces, in at least one test case.** Code that splits on a
+  run of whitespace and code that splits on a single space behave identically for every
+  space-separated input, so only a tab tells them apart. TC-22 exists for this.
+* **Exercise both directions of anything that is saved.** Writing the file and reading it back are
+  separate code paths: a test case that saves proves nothing about loading. Pair an
+  `### Expected data file` test case with a `### Data file` one, as TC-17 and TC-18 do.
+
+## Checking that the test cases still bite
+
+A suite that cannot fail is worse than no suite, because it is trusted. When the plan has grown, or
+before relying on it for a large refactoring, prove it still bites: back up `src/main/java`, introduce
+one deliberate bug, run the session, confirm it is caught, and restore. One bug at a time, because the
+session stops at the first failure.
+
+Bugs worth trying, all of which the current plan catches: using the task number as the list index;
+making the upper bound one too generous; having `unmark` call `markAsDone()`; adding a task before
+validating its description; numbering `list` from zero; reporting the count before a deletion rather
+than after; dropping a separator in `toFileFormat()`; ignoring the done-status when loading; leaving a
+description untrimmed; and splitting input on `" "` instead of `"\\s+"`.
+
+Restore every file afterwards with a plain file copy. **Do not use `git checkout` or `git stash` to
+undo the bugs** — per AGENTS.md the user runs all Git commands. Keep the backup under `_temp/`, which
+is gitignored, and confirm with `git status` that the working tree is clean before proposing a commit.
 
 ## Commit messages
 
