@@ -105,11 +105,14 @@ so match them exactly rather than inventing new layout:
 
 * One branch per increment, named `branch-<Increment>` (e.g. `branch-A-MoreOOP`), merged into
   `master` with a merge commit. Non-increment chores may go straight onto `master`.
+* **Every commit message must follow the `seedu-git-standard` skill.** Read it before proposing one.
+  In short, the required shape is `<category>: <Capitalized imperative phrase>` — no trailing
+  period, 72 characters maximum and ideally 50.
 * Commit messages are **a single sentence — subject line only, no body**. Keep them short enough to
   read at a glance in `git log --oneline`. The rationale for a change belongs in your chat
   explanation and in the code's own comments, not in the commit message.
-* Commit messages follow Conventional Commits. The prefixes used so far are `feat:`, `refactor:`,
-  `style:`, and `chore:`; `fix:` and `docs:` are fine when they apply.
+* Categories in use: `feat:`, `refactor:`, `style:`, `chore:`; `fix:` and `docs:` when they apply.
+* **One commit per standalone change.** Code changes and agent-file changes never share a commit.
 * Use lightweight tags (`git tag A-MoreOOP`) unless an annotated tag is requested. One tag per
   increment, placed on `master` after the merge.
 * The remote is `origin` → `https://github.com/PoonnatW/ip.git`.
@@ -136,12 +139,26 @@ Format it like this:
 ```powershell
 git checkout -b branch-A-MoreOOP
 git add src/main/java/Ui.java src/main/java/CortisolBot.java
-git commit -m "refactor: extract user interaction into a Ui class"
+git commit -m "refactor: Extract user interaction into a Ui class"
 ```
 ~~~
 
 Explain briefly what any unfamiliar command does, per the guidance below. If the user reports that a
 command failed, diagnose it and propose a corrected command — still for them to run.
+
+# Project skills — mandatory, not optional
+
+Project skills live in `.claude/skills/<name>/SKILL.md` and are committed to the repo so they are
+available in every session. Read the relevant skill *before* doing the work it governs, not after.
+
+| Skill | When it is mandatory |
+|---|---|
+| `seedu-java-coding-standard` | Writing, reviewing, or reformatting **any** Java code in this project. |
+| `seedu-git-standard` | Proposing or reviewing **any** commit message, and naming any branch. |
+| `present-changes-visually` | Presenting the result of an increment, or whenever the user asks to see changes. |
+
+These are standards, not suggestions: code that does not follow `seedu-java-coding-standard` is not
+finished, and a commit message that does not follow `seedu-git-standard` should not be proposed.
 
 # Guidance for interacting with users
 
@@ -163,8 +180,8 @@ Honest record of what is missing, so it is not mistaken for something that alrea
 * **No automated tests.** `.gitignore` references `text-ui-test/ACTUAL.TXT`, but the folder was
   removed from the template and never rebuilt. Refactoring increments currently have no regression
   safety net.
-* **No `/test-ui` or `/present-changes-visually` skill** is installed for this repo. Update this
-  section once they exist.
+* **No text-UI test skill** (`/test-ui` or similar) is installed yet, because there is nothing for it
+  to run. Build the harness first, then the skill, then update this entry.
 * **`docs/README.md` is still the unedited template** — placeholder headings, no screenshot, no
   product intro.
 * **Voice is not yet consistent.** Several messages in `CortisolBot.java` are still the stock
