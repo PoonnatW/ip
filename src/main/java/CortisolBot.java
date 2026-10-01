@@ -6,6 +6,9 @@ import java.util.Scanner;
  */
 public class CortisolBot {
 
+    /** Where the task list is kept between sessions. */
+    private static final String DATA_FILE_PATH = "data/cortisolbot.txt";
+
     /**
      * Prints a horizontal separator line.
      */
@@ -215,8 +218,36 @@ public class CortisolBot {
         printLine();
     }
 
+    /**
+     * Reports what was found in the data file when the bot started.
+     * <p>
+     * Says nothing at all when there was nothing to report, so that a first
+     * run opens with the greeting alone.
+     *
+     * @param taskCount number of tasks that were loaded
+     * @param skippedLineCount number of lines that could not be understood
+     */
+    public static void printLoadReport(int taskCount, int skippedLineCount) {
+        if (skippedLineCount > 0) {
+            System.out.printf(" %d line(s) of my records were illegible, sir/madam. "
+                    + "I have set them aside.%n", skippedLineCount);
+        }
+        if (taskCount > 0) {
+            System.out.printf(" I have retrieved %d task(s) from my records, sir/madam.%n",
+                    taskCount);
+        }
+        if (skippedLineCount > 0 || taskCount > 0) {
+            printLine();
+        }
+    }
+
+    /**
+     * Greets the user, then reads and carries out commands until told to stop.
+     *
+     * @param args command line arguments, which this program does not use
+     */
     public static void main(String[] args) {
-        String banner = "  ____           _   _           _ ____        _   \n"
+        String banner ="  ____           _   _           _ ____        _   \n"
                 + " / ___|___  _ __| |_(_)___  ___ | | __ )  ___ | |_ \n"
                 + "| |   / _ \\| '__| __| / __|/ _ \\| |  _ \\ / _ \\| __|\n"
                 + "| |__| (_) | |  | |_| \\__ \\ (_) | | |_) | (_) | |_ \n"
@@ -232,7 +263,20 @@ public class CortisolBot {
         // An ArrayList grows as needed, so there is no fixed ceiling on the
         // number of tasks the bot can hold. It starts off holding whatever was
         // saved at the end of the previous session.
-        ArrayList<Task> tasks = Storage.load();
+        Storage storage = new Storage(DATA_FILE_PATH);
+        ArrayList<Task> tasks;
+
+        try {
+            tasks = storage.load();
+            printLoadReport(tasks.size(), storage.getSkippedLineCount());
+        } catch (CortisolException e) {
+            // The records could not be opened at all. The message is already
+            // phrased for the user, and the evening begins with an empty list.
+            System.out.println(" " + e.getMessage());
+            printLine();
+            tasks = new ArrayList<>();
+        }
+
         Scanner scanner = new Scanner(System.in);
         boolean isExiting = false;
 
@@ -295,9 +339,16 @@ public class CortisolBot {
             }
 
             // Only reached when the command succeeded, since a failed command
-            // leaves isListChanged false.
+            // leaves isListChanged false. A save that fails is reported but
+            // does not end the session, so the user can carry on working even
+            // if the file cannot be written.
             if (isListChanged) {
-                Storage.save(tasks);
+                try {
+                    storage.save(tasks);
+                } catch (CortisolException e) {
+                    System.out.println(" " + e.getMessage());
+                    printLine();
+                }
             }
         }
 

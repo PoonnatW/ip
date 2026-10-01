@@ -16,17 +16,32 @@ import java.util.ArrayList;
  * </pre>
  * The first field is the task type, the second is 1 when the task is done and
  * 0 otherwise, and the rest are the task's own fields.
+ * <p>
+ * Each Storage object is tied to one file, named when the object is
+ * constructed, and reports trouble by throwing {@link CortisolException}
+ * rather than by printing. What the user is told, and when, is the caller's
+ * business; this class only knows about the file.
  */
 public class Storage {
 
+    /** File this object reads from and writes to. */
+    private final Path dataFile;
+
+    /** Lines the most recent call to {@link #load()} could not understand. */
+    private int skippedLineCount;
+
     /**
-     * Location of the data file, relative to the project root.
-     * <p>
-     * Built with {@link Paths#get(String, String...)} rather than written as
-     * "data/cortisolbot.txt" so that the correct separator is used on every
-     * operating system, and kept relative so the bot works on any computer.
+     * Constructs a Storage object for one data file.
+     *
+     * @param filePath path to the data file, relative to the folder the bot is
+     *                 run from, so that it works on any computer. It may be
+     *                 written with "/" separators whatever the operating
+     *                 system, since {@link Paths#get(String, String...)}
+     *                 converts them to the local form
      */
-    private static final Path DATA_FILE = Paths.get("data", "cortisolbot.txt");
+    public Storage(String filePath) {
+        this.dataFile = Paths.get(filePath);
+    }
 
     /**
      * Loads the saved tasks.
@@ -34,20 +49,22 @@ public class Storage {
      * A missing file is treated as an empty list rather than an error, since
      * that is simply what the first run looks like. Lines that cannot be
      * understood are skipped so that one damaged line does not cost the user
-     * the rest of their list.
+     * the rest of their list; how many were skipped is available afterwards
+     * from {@link #getSkippedLineCount()}.
      *
      * @return the tasks that were loaded, or an empty list if there were none
+     * @throws CortisolException if the file exists but cannot be read
      */
-    public static ArrayList<Task> load() {
+    public ArrayList<Task> load() throws CortisolException {
+        skippedLineCount = 0;
+
         ArrayList<Task> tasks = new ArrayList<>();
-        if (!Files.exists(DATA_FILE)) {
+        if (!Files.exists(dataFile)) {
             return tasks;
         }
 
-        int skippedLines = 0;
-
         try {
-            for (String line : Files.readAllLines(DATA_FILE)) {
+            for (String line : Files.readAllLines(dataFile)) {
                 if (line.isBlank()) {
                     continue;
                 }
@@ -55,29 +72,28 @@ public class Storage {
                 try {
                     tasks.add(parseTask(line));
                 } catch (CortisolException e) {
-                    skippedLines++;
+                    skippedLineCount++;
                 }
             }
         } catch (IOException e) {
-            System.out.println(" I could not open my records, sir/madam. "
+            throw new CortisolException("I could not open my records, sir/madam. "
                     + "I shall begin the evening with an empty list.");
-            CortisolBot.printLine();
-            return new ArrayList<>();
-        }
-
-        if (skippedLines > 0) {
-            System.out.printf(" %d line(s) of my records were illegible, sir/madam. "
-                    + "I have set them aside.%n", skippedLines);
-        }
-        if (!tasks.isEmpty()) {
-            System.out.printf(" I have retrieved %d task(s) from my records, sir/madam.%n",
-                    tasks.size());
-        }
-        if (skippedLines > 0 || !tasks.isEmpty()) {
-            CortisolBot.printLine();
         }
 
         return tasks;
+    }
+
+    /**
+     * Returns how many lines the most recent load could not understand.
+     * <p>
+     * Reported separately rather than thrown, because a damaged line is not a
+     * reason to abandon the load: the caller needs the tasks that were
+     * understood <em>and</em> the number that were not.
+     *
+     * @return number of lines skipped by the most recent call to load
+     */
+    public int getSkippedLineCount() {
+        return skippedLineCount;
     }
 
     /**
@@ -135,29 +151,26 @@ public class Storage {
 
     /**
      * Writes the whole task list to disk, replacing whatever was there before.
-     * <p>
-     * A failure to save is reported but does not stop the bot, so the user can
-     * carry on working even if the file cannot be written.
      *
      * @param tasks list containing the tasks
+     * @throws CortisolException if the list cannot be written to the file
      */
-    public static void save(ArrayList<Task> tasks) {
+    public void save(ArrayList<Task> tasks) throws CortisolException {
         StringBuilder content = new StringBuilder();
         for (Task task : tasks) {
             content.append(task.toFileFormat()).append(System.lineSeparator());
         }
 
         try {
-            Path parentFolder = DATA_FILE.getParent();
+            Path parentFolder = dataFile.getParent();
             if (parentFolder != null) {
                 // Creates the folder on the first run; does nothing if it exists.
                 Files.createDirectories(parentFolder);
             }
-            Files.writeString(DATA_FILE, content.toString());
+            Files.writeString(dataFile, content.toString());
         } catch (IOException e) {
-            System.out.println(" I was unable to write to my records, sir/madam. "
+            throw new CortisolException("I was unable to write to my records, sir/madam. "
                     + "This change may not survive the evening.");
-            CortisolBot.printLine();
         }
     }
 }
