@@ -38,6 +38,13 @@ root, since tools such as Gradle expect it there.
 Supported commands: `list`, `todo`, `deadline … /by …`, `event … /from … /to …`, `mark`, `unmark`,
 `delete`, `bye`.
 
+Tests live in `test/`:
+
+| File | Role |
+|---|---|
+| `test/ui-test-plan.md` | The test cases: for each, its aim, the lines typed, and the output expected. |
+| `test/run-ui-tests.py` | Runs the plan. Standard library only; no packages to install. |
+
 # Project-specific requirements
 
 ## Java version
@@ -58,6 +65,31 @@ java -cp bin CortisolBot
 `bin/`, `out/`, `data/`, and `*.jar` are all gitignored, so build output and the user's saved task
 list never enter a commit. An unmerged `origin/add-gradle-support` branch exists if a build tool is
 ever wanted; do not merge it without asking.
+
+## Testing — required after every code change
+
+The repository has no unit tests. Its only regression safety net is the text-UI test session:
+
+```powershell
+python test/run-ui-tests.py
+```
+
+**After any change to `src/main/java`, without exception:**
+
+1. Update `test/ui-test-plan.md` if the change altered or added anything the user can see — a new
+   command, a reworded message, a different layout. The plan change belongs in the **same commit** as
+   the code change, so that the two never disagree in the repository's history.
+2. Invoke the `test-ui` skill, which runs the session and reports it.
+3. Show the user the record of the session — the input typed and the output produced — not merely a
+   verdict. The script also writes it to `_temp/ui-test-session.txt`.
+
+This applies to refactoring just as much as to new features: a refactoring that changes visible
+behaviour has gone wrong, and the session is how that is found out.
+
+A failing test case means either the code is wrong, or the behaviour changed deliberately and the
+plan is now out of date. Settle which it is and fix that one. Never edit an expected output merely to
+make a test case pass, and never write an expected output by pasting in what the program actually
+printed — reason it out from the source and from the voice and formatting rules below.
 
 ## The bot's voice — a wealthy household's butler
 
@@ -156,9 +188,11 @@ available in every session. Read the relevant skill *before* doing the work it g
 | `seedu-java-coding-standard` | Writing, reviewing, or reformatting **any** Java code in this project. |
 | `seedu-git-standard` | Proposing or reviewing **any** commit message, and naming any branch. |
 | `present-changes-visually` | Presenting the result of an increment, or whenever the user asks to see changes. |
+| `test-ui` | After **any** change to `src/main/java`, and whenever the user asks for the bot to be tested. |
 
 These are standards, not suggestions: code that does not follow `seedu-java-coding-standard` is not
-finished, and a commit message that does not follow `seedu-git-standard` should not be proposed.
+finished, a commit message that does not follow `seedu-git-standard` should not be proposed, and a
+code change that has not been through `test-ui` is not ready to be committed.
 
 # Guidance for interacting with users
 
@@ -177,12 +211,20 @@ finished, and a commit message that does not follow `seedu-git-standard` should 
 
 Honest record of what is missing, so it is not mistaken for something that already works:
 
-* **No automated tests.** `.gitignore` references `text-ui-test/ACTUAL.TXT`, but the folder was
-  removed from the template and never rebuilt. Refactoring increments currently have no regression
-  safety net.
-* **No text-UI test skill** (`/test-ui` or similar) is installed yet, because there is nothing for it
-  to run. Build the harness first, then the skill, then update this entry.
+* **No unit tests.** Every class is exercised only from the outside, through the text-UI test session
+  in `test/ui-test-plan.md` (11 test cases, run by the `test-ui` skill). That session covers the
+  commands, the error messages and the data file, but it cannot reach a method that no command calls,
+  and it says nothing about how the code is arranged inside. JUnit is the course's answer and has not
+  been introduced yet.
+* **`.gitignore` still mentions `text-ui-test/`**, which is the course template's harness layout. This
+  repository never rebuilt that folder and uses `test/` instead; the stale lines are harmless and have
+  been left alone.
 * **`docs/README.md` is still the unedited template** — placeholder headings, no screenshot, no
   product intro.
 * **Voice is not yet consistent.** Several messages in `CortisolBot.java` are still the stock
-  starter wordings listed above and need a pass to bring them into the butler voice.
+  starter wordings listed above and need a pass to bring them into the butler voice. The test plan
+  records them as they currently are, under "Known deviations recorded here on purpose", so the
+  rewording pass must update those expected outputs in the same commit.
+* **`list` does not indent its task lines**, printing `1.[T][ ] read book` where every other command
+  prefixes a tab. This contradicts the output-formatting rule above and is likewise recorded in the
+  test plan as a known deviation. Both it and the voice pass are to be settled before `A-MoreOOP`.
