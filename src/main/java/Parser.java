@@ -133,7 +133,8 @@ public class Parser {
      *
      * @param arguments text following the command word
      * @return the deadline that text describes
-     * @throws CortisolException if the description or due date is missing
+     * @throws CortisolException if the description or due date is missing, or
+     *                           the due date cannot be read as a date
      */
     public static Deadline parseDeadline(String arguments) throws CortisolException {
         // Limit of 2 keeps any later "/by" as part of the due date itself.
@@ -150,7 +151,7 @@ public class Parser {
                     + " Do try: deadline <description> /by <when>");
         }
 
-        return new Deadline(description, deadline);
+        return new Deadline(description, TaskDateTime.parse(deadline));
     }
 
     /**

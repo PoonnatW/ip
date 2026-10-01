@@ -2,15 +2,17 @@
  * Represents a task with a deadline.
  */
 public class Deadline extends Task {
-    private String deadline;
+
+    /** When the task falls due. */
+    private final TaskDateTime deadline;
 
     /**
      * Constructs a deadline task with the given description and deadline.
      *
      * @param description description of the task
-     * @param deadline deadline of the task
+     * @param deadline when the task falls due
      */
-    public Deadline(String description, String deadline) {
+    public Deadline(String description, TaskDateTime deadline) {
         super(description);
         this.deadline = deadline;
     }
@@ -24,6 +26,6 @@ public class Deadline extends Task {
 
     @Override
     public String toFileFormat() {
-        return "D | " + super.toFileFormat() + " | " + deadline;
+        return "D | " + super.toFileFormat() + " | " + deadline.toFileFormat();
     }
 }
