@@ -119,7 +119,18 @@ Your list is presently empty, sir/madam. A rare luxury.
 A todo without a description is rather like tea without leaves, sir/madam.
 I do beg your pardon, sir/madam, but that instruction is not in my repertoire.
 Tonight has been an honour. I shall bid thee farewell!
+Very good, sir/madam. I have added the following:
+Consider it done, sir/madam:
+Very well, sir/madam. I have returned it to the undone:
+Consider it forgotten, sir/madam:
+Your tasks, sir/madam, as they presently stand:
 ```
+
+The replies that replaced the stock wordings share a house style on purpose: `Consider it done` /
+`Consider it forgotten` are a matched pair, and both counts read `That makes 3 in your keeping.` /
+`That leaves 1 in your keeping.` — phrased that way so that one task reads correctly too, which the
+stock `Now you have 1 tasks in the list.` did not. Keep new strings inside that style rather than
+inventing a sixth register.
 
 When you add or change a user-facing string, check it against those. If the right phrasing is not
 obvious, propose the wording to the user rather than guessing.
@@ -212,7 +223,7 @@ code change that has not been through `test-ui` is not ready to be committed.
 Honest record of what is missing, so it is not mistaken for something that already works:
 
 * **No unit tests.** Every class is exercised only from the outside, through the text-UI test session
-  in `test/ui-test-plan.md` (11 test cases, run by the `test-ui` skill). That session covers the
+  in `test/ui-test-plan.md` (22 test cases, run by the `test-ui` skill). That session covers the
   commands, the error messages and the data file, but it cannot reach a method that no command calls,
   and it says nothing about how the code is arranged inside. JUnit is the course's answer and has not
   been introduced yet.
@@ -225,10 +236,5 @@ Honest record of what is missing, so it is not mistaken for something that alrea
   whichever increment next touches `Storage`.
 * **`docs/README.md` is still the unedited template** — placeholder headings, no screenshot, no
   product intro.
-* **Voice is not yet consistent.** Several messages in `CortisolBot.java` are still the stock
-  starter wordings listed above and need a pass to bring them into the butler voice. The test plan
-  records them as they currently are, under "Known deviations recorded here on purpose", so the
-  rewording pass must update those expected outputs in the same commit.
-* **`list` does not indent its task lines**, printing `1.[T][ ] read book` where every other command
-  prefixes a tab. This contradicts the output-formatting rule above and is likewise recorded in the
-  test plan as a known deviation. Both it and the voice pass are to be settled before `A-MoreOOP`.
+* **The student profile above has two `[to be filled]` blanks**, so guidance on how much to explain
+  is still guesswork.
