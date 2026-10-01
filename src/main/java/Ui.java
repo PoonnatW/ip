@@ -125,6 +125,32 @@ public class Ui {
     }
 
     /**
+     * Shows the tasks that matched a search.
+     * <p>
+     * The matches are numbered from 1 among themselves rather than by their
+     * place in the whole list, which is what the course's own example shows.
+     * Note the consequence: a number here is not the number `mark` and `delete`
+     * expect. Showing the list numbers instead would need the matches to carry
+     * their positions, which a plain list of tasks does not.
+     *
+     * @param matches the tasks that matched, in list order
+     * @param keyword what was searched for, quoted back to the user
+     */
+    public void showMatchingTasks(ArrayList<Task> matches, String keyword) {
+        if (matches.isEmpty()) {
+            System.out.printf("Nothing in your list mentions '%s', sir/madam.\n", keyword);
+            showLine();
+            return;
+        }
+
+        System.out.printf("These tasks mention '%s', sir/madam:\n", keyword);
+        for (int i = 0; i < matches.size(); i++) {
+            System.out.printf("\t%d.%s\n", i + 1, matches.get(i));
+        }
+        showLine();
+    }
+
+    /**
      * Announces a newly added task and the resulting size of the list.
      *
      * @param task the task that was just added

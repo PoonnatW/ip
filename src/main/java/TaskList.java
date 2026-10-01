@@ -76,6 +76,25 @@ public class TaskList {
     }
 
     /**
+     * Returns every task whose description contains the given keyword.
+     * <p>
+     * The matches are a new list rather than a view, so the task list itself is
+     * untouched by a search, and they keep the order they have here.
+     *
+     * @param keyword word or phrase to look for
+     * @return the matching tasks, in list order, or an empty list if none match
+     */
+    public ArrayList<Task> find(String keyword) {
+        ArrayList<Task> matches = new ArrayList<>();
+        for (Task task : tasks) {
+            if (task.matchesKeyword(keyword)) {
+                matches.add(task);
+            }
+        }
+        return matches;
+    }
+
+    /**
      * Returns the tasks themselves, for printing and for saving.
      * <p>
      * Callers are expected to read the list and not to change it: adding and
