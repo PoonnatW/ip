@@ -60,7 +60,7 @@ checked is where a description begins and ends.
  \____\___/|_|   \__|_|___/\___/|_|____/ \___/ \__|
 -------------------------------------------------------
 Greetings sir/madam, CortisolBot humbly at your service.
-How may I serve you at this evening?
+How may I serve you this evening?
 -------------------------------------------------------
 ```
 
@@ -68,7 +68,7 @@ How may I serve you at this evening?
 
 ```text
 -------------------------------------------------------
-Tonight has been an honour. I shall bid thee farewell!
+Tonight has been an honour, sir/madam. I shall bid you good evening.
 -------------------------------------------------------
 ```
 
@@ -317,11 +317,11 @@ bye
 -------------------------------------------------------
 -------------------------------------------------------
  A deadline is of little use without a date, sir/madam.
- Do try: deadline <description> /by <when>
+ Do try: deadline <description> /by 2019-12-02
 -------------------------------------------------------
 -------------------------------------------------------
  You have not told me what is due, sir/madam.
- Do try: deadline <description> /by <when>
+ Do try: deadline <description> /by 2019-12-02
 -------------------------------------------------------
 -------------------------------------------------------
  An event requires both a start and an end, sir/madam.
@@ -397,7 +397,7 @@ bye
 
 ```text
 {{greeting}}
- I have retrieved 3 task(s) from my records, sir/madam.
+ I have retrieved 3 of your tasks, sir/madam.
 -------------------------------------------------------
 -------------------------------------------------------
 Your tasks, sir/madam, as they presently stand:
@@ -432,8 +432,8 @@ bye
 
 ```text
 {{greeting}}
- 2 line(s) of my records were illegible, sir/madam. I have set them aside.
- I have retrieved 1 task(s) from my records, sir/madam.
+ I could not read 2 of my records, sir/madam. I have set them aside.
+ I have retrieved 1 of your tasks, sir/madam.
 -------------------------------------------------------
 -------------------------------------------------------
 Your tasks, sir/madam, as they presently stand:
@@ -857,7 +857,7 @@ bye
 
 ```text
 {{greeting}}
- I have retrieved 1 task(s) from my records, sir/madam.
+ I have retrieved 1 of your tasks, sir/madam.
 -------------------------------------------------------
 -------------------------------------------------------
 Your tasks, sir/madam, as they presently stand:
@@ -927,7 +927,7 @@ bye
 
 ```text
 {{greeting}}
- I have retrieved 1 task(s) from my records, sir/madam.
+ I have retrieved 1 of your tasks, sir/madam.
 -------------------------------------------------------
 -------------------------------------------------------
 Your tasks, sir/madam, as they presently stand:
@@ -959,7 +959,7 @@ bye
 
 ```text
 {{greeting}}
- 2 line(s) of my records were illegible, sir/madam. I have set them aside.
+ I could not read 2 of my records, sir/madam. I have set them aside.
 -------------------------------------------------------
 -------------------------------------------------------
 Your list is presently empty, sir/madam. A rare luxury.
@@ -1123,8 +1123,8 @@ bye
 
 ```text
 {{greeting}}
- 1 line(s) of my records were illegible, sir/madam. I have set them aside.
- I have retrieved 2 task(s) from my records, sir/madam.
+ I could not read 1 of my records, sir/madam. I have set them aside.
+ I have retrieved 2 of your tasks, sir/madam.
 -------------------------------------------------------
 -------------------------------------------------------
 Your tasks, sir/madam, as they presently stand:
@@ -1173,17 +1173,17 @@ Very good, sir/madam. I have added the following:
  That makes 3 in your keeping.
 -------------------------------------------------------
 -------------------------------------------------------
-These tasks mention 'book', sir/madam:
+The following mention 'book', sir/madam:
 	1.[T][ ] read book
 	2.[D][ ] return book (by: Jun 06 2019)
 -------------------------------------------------------
 -------------------------------------------------------
-These tasks mention 'BOOK', sir/madam:
+The following mention 'BOOK', sir/madam:
 	1.[T][ ] read book
 	2.[D][ ] return book (by: Jun 06 2019)
 -------------------------------------------------------
 -------------------------------------------------------
-These tasks mention 'milk', sir/madam:
+The following mention 'milk', sir/madam:
 	1.[T][ ] buy milk
 -------------------------------------------------------
 -------------------------------------------------------

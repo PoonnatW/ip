@@ -59,7 +59,7 @@ public class Ui {
         System.out.println(banner);
         showLine();
         System.out.printf("Greetings sir/madam, %s humbly at your service.\n", NAME);
-        System.out.println("How may I serve you at this evening?");
+        System.out.println("How may I serve you this evening?");
         showLine();
     }
 
@@ -67,7 +67,8 @@ public class Ui {
      * Prints the closing line of the session.
      */
     public void showFarewell() {
-        System.out.println("Tonight has been an honour. I shall bid thee farewell!");
+        System.out.println("Tonight has been an honour, sir/madam. "
+                + "I shall bid you good evening.");
         showLine();
     }
 
@@ -82,12 +83,11 @@ public class Ui {
      */
     public void showLoadReport(int taskCount, int skippedLineCount) {
         if (skippedLineCount > 0) {
-            System.out.printf(" %d line(s) of my records were illegible, sir/madam. "
+            System.out.printf(" I could not read %d of my records, sir/madam. "
                     + "I have set them aside.%n", skippedLineCount);
         }
         if (taskCount > 0) {
-            System.out.printf(" I have retrieved %d task(s) from my records, sir/madam.%n",
-                    taskCount);
+            System.out.printf(" I have retrieved %d of your tasks, sir/madam.%n", taskCount);
         }
         if (skippedLineCount > 0 || taskCount > 0) {
             showLine();
@@ -143,7 +143,7 @@ public class Ui {
             return;
         }
 
-        System.out.printf("These tasks mention '%s', sir/madam:\n", keyword);
+        System.out.printf("The following mention '%s', sir/madam:\n", keyword);
         for (int i = 0; i < matches.size(); i++) {
             System.out.printf("\t%d.%s\n", i + 1, matches.get(i));
         }

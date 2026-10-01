@@ -162,11 +162,11 @@ public class Parser {
 
         if (description.isEmpty()) {
             throw new CortisolException("You have not told me what is due, sir/madam.\n"
-                    + " Do try: deadline <description> /by <when>");
+                    + " Do try: deadline <description> /by 2019-12-02");
         }
         if (deadline.isEmpty()) {
             throw new CortisolException("A deadline is of little use without a date, sir/madam.\n"
-                    + " Do try: deadline <description> /by <when>");
+                    + " Do try: deadline <description> /by 2019-12-02");
         }
 
         return new Deadline(description, TaskDateTime.parse(deadline));
