@@ -11,11 +11,15 @@ import java.util.ArrayList;
  * Each task occupies one line, with its fields separated by " | ". For example:
  * <pre>
  * T | 1 | read book
- * D | 0 | return book | June 6th
+ * D | 0 | return book | 2019-12-02
+ * D | 0 | submit form | 2019-12-02 1800
  * E | 0 | project meeting | Aug 6th 2pm | 4pm
  * </pre>
  * The first field is the task type, the second is 1 when the task is done and
- * 0 otherwise, and the rest are the task's own fields.
+ * 0 otherwise, and the rest are the task's own fields. A deadline's date is
+ * written in the same shape the user types it, so a line of this file can be
+ * read back by the very parsing that accepted it; an event's start and end are
+ * still free text, and become dates in a later increment.
  * <p>
  * Each Storage object is tied to one file, named when the object is
  * constructed, and reports trouble by throwing {@link CortisolException}
@@ -131,7 +135,7 @@ public class Storage {
             if (fields.length < 4 || fields[3].isBlank()) {
                 throw new CortisolException("Deadline is missing its due date.");
             }
-            task = new Deadline(description, fields[3].trim());
+            task = new Deadline(description, TaskDateTime.parse(fields[3].trim()));
             break;
         case "E":
             if (fields.length < 5 || fields[3].isBlank() || fields[4].isBlank()) {

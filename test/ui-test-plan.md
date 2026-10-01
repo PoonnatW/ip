@@ -120,7 +120,7 @@ in their own format, and are written to the data file in the encoding `Storage` 
 
 ```text
 todo read book
-deadline return book /by June 6th
+deadline return book /by 2019-06-06
 event project meeting /from Aug 6th 2pm /to 4pm
 list
 bye
@@ -137,7 +137,7 @@ Very good, sir/madam. I have added the following:
 -------------------------------------------------------
 -------------------------------------------------------
 Very good, sir/madam. I have added the following:
-	[D][ ] return book (by: June 6th)
+	[D][ ] return book (by: Jun 06 2019)
  That makes 2 in your keeping.
 -------------------------------------------------------
 -------------------------------------------------------
@@ -148,7 +148,7 @@ Very good, sir/madam. I have added the following:
 -------------------------------------------------------
 Your tasks, sir/madam, as they presently stand:
 	1.[T][ ] read book
-	2.[D][ ] return book (by: June 6th)
+	2.[D][ ] return book (by: Jun 06 2019)
 	3.[E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
 -------------------------------------------------------
 {{farewell}}
@@ -158,7 +158,7 @@ Your tasks, sir/madam, as they presently stand:
 
 ```text
 T | 0 | read book
-D | 0 | return book | June 6th
+D | 0 | return book | 2019-06-06
 E | 0 | project meeting | Aug 6th 2pm | 4pm
 ```
 
@@ -293,6 +293,10 @@ bye
 `/by`, a deadline with no description, and an event with no `/to`. Each must explain the
 misunderstanding and offer the correct form.
 
+The third line keeps a free-text date, `/by June 6th`, on purpose. A missing description must be
+reported before the date is so much as looked at, so this line checks the order of the two
+complaints: the answer must be about the description, not about the date.
+
 ### Input
 
 ```text
@@ -378,7 +382,7 @@ retrieval is announced, and that every task type and the done-status come back i
 
 ```text
 T | 1 | read book
-D | 0 | return book | June 6th
+D | 0 | return book | 2019-06-06
 E | 0 | project meeting | Aug 6th 2pm | 4pm
 ```
 
@@ -398,7 +402,7 @@ bye
 -------------------------------------------------------
 Your tasks, sir/madam, as they presently stand:
 	1.[T][X] read book
-	2.[D][ ] return book (by: June 6th)
+	2.[D][ ] return book (by: Jun 06 2019)
 	3.[E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
 -------------------------------------------------------
 {{farewell}}
@@ -483,7 +487,7 @@ wrong would be caught at the next `list` rather than going unnoticed.
 
 ```text
 todo read book
-deadline return book /by June 6th
+deadline return book /by 2019-06-06
 todo
 list
 mark 9
@@ -504,7 +508,7 @@ Very good, sir/madam. I have added the following:
 -------------------------------------------------------
 -------------------------------------------------------
 Very good, sir/madam. I have added the following:
-	[D][ ] return book (by: June 6th)
+	[D][ ] return book (by: Jun 06 2019)
  That makes 2 in your keeping.
 -------------------------------------------------------
 -------------------------------------------------------
@@ -514,7 +518,7 @@ Very good, sir/madam. I have added the following:
 -------------------------------------------------------
 Your tasks, sir/madam, as they presently stand:
 	1.[T][ ] read book
-	2.[D][ ] return book (by: June 6th)
+	2.[D][ ] return book (by: Jun 06 2019)
 -------------------------------------------------------
 -------------------------------------------------------
  I keep no task numbered 9, sir/madam.
@@ -523,7 +527,7 @@ Your tasks, sir/madam, as they presently stand:
 -------------------------------------------------------
 Your tasks, sir/madam, as they presently stand:
 	1.[T][ ] read book
-	2.[D][ ] return book (by: June 6th)
+	2.[D][ ] return book (by: Jun 06 2019)
 -------------------------------------------------------
 -------------------------------------------------------
  I keep no task numbered 0, sir/madam.
@@ -532,7 +536,7 @@ Your tasks, sir/madam, as they presently stand:
 -------------------------------------------------------
 Your tasks, sir/madam, as they presently stand:
 	1.[T][ ] read book
-	2.[D][ ] return book (by: June 6th)
+	2.[D][ ] return book (by: Jun 06 2019)
 -------------------------------------------------------
 {{farewell}}
 ```
@@ -541,7 +545,7 @@ Your tasks, sir/madam, as they presently stand:
 
 ```text
 T | 0 | read book
-D | 0 | return book | June 6th
+D | 0 | return book | 2019-06-06
 ```
 
 ## TC-13 The first and last task numbers
@@ -749,15 +753,19 @@ T | 0 | read book
 
 ## TC-16 Command words and markers inside a description
 
-**Aim:** Check that a description is taken literally: `deadline` and `/by` inside a todo's
-description stay part of it, and only the first `/by` of a deadline separates the date, so a date may
-itself contain `/by`.
+**Aim:** Check that a todo's description is taken literally -- the words `deadline` and `/by` inside
+it stay part of the description and are not acted on -- while a real deadline alongside it is still
+read as a date.
+
+Until Level-8 this test case also checked that a date could itself contain `/by`, since only the
+first `/by` separated the date. A date must now be a date, so that is no longer expressible; the
+input that checked it has moved to TC-23, where it is refused.
 
 ### Input
 
 ```text
 todo deadline the report /by tomorrow
-deadline submit form /by next /by week
+deadline submit form /by 2019-12-02
 list
 bye
 ```
@@ -773,13 +781,13 @@ Very good, sir/madam. I have added the following:
 -------------------------------------------------------
 -------------------------------------------------------
 Very good, sir/madam. I have added the following:
-	[D][ ] submit form (by: next /by week)
+	[D][ ] submit form (by: Dec 02 2019)
  That makes 2 in your keeping.
 -------------------------------------------------------
 -------------------------------------------------------
 Your tasks, sir/madam, as they presently stand:
 	1.[T][ ] deadline the report /by tomorrow
-	2.[D][ ] submit form (by: next /by week)
+	2.[D][ ] submit form (by: Dec 02 2019)
 -------------------------------------------------------
 {{farewell}}
 ```
@@ -788,7 +796,7 @@ Your tasks, sir/madam, as they presently stand:
 
 ```text
 T | 0 | deadline the report /by tomorrow
-D | 0 | submit form | next /by week
+D | 0 | submit form | 2019-12-02
 ```
 
 ## TC-17 Saving a description that contains the file separator
@@ -867,7 +875,7 @@ on screen and by ` | ` in the data file, where a stray trailing space would show
 ### Input
 
 ```text
-deadline   return the book    /by   June 6th
+deadline   return the book    /by   2019-06-06
 list
 bye
 ```
@@ -878,12 +886,12 @@ bye
 {{greeting}}
 -------------------------------------------------------
 Very good, sir/madam. I have added the following:
-	[D][ ] return the book (by: June 6th)
+	[D][ ] return the book (by: Jun 06 2019)
  That makes 1 in your keeping.
 -------------------------------------------------------
 -------------------------------------------------------
 Your tasks, sir/madam, as they presently stand:
-	1.[D][ ] return the book (by: June 6th)
+	1.[D][ ] return the book (by: Jun 06 2019)
 -------------------------------------------------------
 {{farewell}}
 ```
@@ -891,7 +899,7 @@ Your tasks, sir/madam, as they presently stand:
 ### Expected data file
 
 ```text
-D | 0 | return the book | June 6th
+D | 0 | return the book | 2019-06-06
 ```
 
 ## TC-20 Blank lines in the data file
@@ -1001,4 +1009,127 @@ Your tasks, sir/madam, as they presently stand:
 
 ```text
 T | 1 | read book
+```
+
+## TC-23 Dates the bot cannot read
+
+**Aim:** Check each way a deadline's date can fail to be a date: free text, a date that does not
+exist, an hour that does not exist, and a second `/by` where the date should be. The `list` at the
+end proves that none of the four left a task behind.
+
+### Input
+
+```text
+deadline return book /by June 6th
+deadline return book /by 2019-02-30
+deadline return book /by 2019-12-02 2560
+deadline submit form /by next /by week
+list
+bye
+```
+
+### Expected output
+
+```text
+{{greeting}}
+-------------------------------------------------------
+ I cannot make out 'June 6th' as a date, sir/madam.
+ Do try: 2019-12-02, or 2019-12-02 1800 if an hour matters.
+-------------------------------------------------------
+-------------------------------------------------------
+ I cannot make out '2019-02-30' as a date, sir/madam.
+ Do try: 2019-12-02, or 2019-12-02 1800 if an hour matters.
+-------------------------------------------------------
+-------------------------------------------------------
+ I cannot make out '2019-12-02 2560' as a date, sir/madam.
+ Do try: 2019-12-02, or 2019-12-02 1800 if an hour matters.
+-------------------------------------------------------
+-------------------------------------------------------
+ I cannot make out 'next /by week' as a date, sir/madam.
+ Do try: 2019-12-02, or 2019-12-02 1800 if an hour matters.
+-------------------------------------------------------
+-------------------------------------------------------
+Your list is presently empty, sir/madam. A rare luxury.
+-------------------------------------------------------
+{{farewell}}
+```
+
+## TC-24 A deadline with an hour
+
+**Aim:** Check that an hour given after the date is kept and shown, that midnight is shown as an hour
+rather than quietly dropped, and that both reach the data file in the shape they were typed.
+
+### Input
+
+```text
+deadline submit form /by 2019-12-02 1800
+deadline collect parcel /by 2019-12-02 0000
+list
+bye
+```
+
+### Expected output
+
+```text
+{{greeting}}
+-------------------------------------------------------
+Very good, sir/madam. I have added the following:
+	[D][ ] submit form (by: Dec 02 2019, 6:00pm)
+ That makes 1 in your keeping.
+-------------------------------------------------------
+-------------------------------------------------------
+Very good, sir/madam. I have added the following:
+	[D][ ] collect parcel (by: Dec 02 2019, 12:00am)
+ That makes 2 in your keeping.
+-------------------------------------------------------
+-------------------------------------------------------
+Your tasks, sir/madam, as they presently stand:
+	1.[D][ ] submit form (by: Dec 02 2019, 6:00pm)
+	2.[D][ ] collect parcel (by: Dec 02 2019, 12:00am)
+-------------------------------------------------------
+{{farewell}}
+```
+
+### Expected data file
+
+```text
+D | 0 | submit form | 2019-12-02 1800
+D | 0 | collect parcel | 2019-12-02 0000
+```
+
+## TC-25 Dates read back from the data file
+
+**Aim:** Check the loading side of Level-8. A deadline saved with an hour and one saved without must
+come back showing exactly what they showed when they were saved, and a deadline left behind by an
+older version of the bot -- when free text was still accepted -- must be set aside as illegible
+rather than stopping the session.
+
+### Data file
+
+```text
+D | 1 | submit form | 2019-12-02 1800
+D | 0 | return book | 2019-06-06
+D | 0 | old habit | June 6th
+```
+
+### Input
+
+```text
+list
+bye
+```
+
+### Expected output
+
+```text
+{{greeting}}
+ 1 line(s) of my records were illegible, sir/madam. I have set them aside.
+ I have retrieved 2 task(s) from my records, sir/madam.
+-------------------------------------------------------
+-------------------------------------------------------
+Your tasks, sir/madam, as they presently stand:
+	1.[D][X] submit form (by: Dec 02 2019, 6:00pm)
+	2.[D][ ] return book (by: Jun 06 2019)
+-------------------------------------------------------
+{{farewell}}
 ```
