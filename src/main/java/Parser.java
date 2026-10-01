@@ -1,5 +1,3 @@
-import java.util.Optional;
-
 /**
  * Makes sense of what the user typed.
  * <p>
@@ -21,23 +19,41 @@ public class Parser {
     /**
      * Returns the command the user asked for, ready to be carried out.
      * <p>
-     * Only the commands that have a class of their own are recognised so far.
-     * The rest are still handled by the switch in {@link CortisolBot} and move
-     * across one at a time, which is why the answer may be empty rather than a
-     * command.
+     * This is the one place that decides what a command word means. A word that
+     * means nothing is refused here rather than later, since nothing further can
+     * usefully be done with it.
      *
      * @param userInput one line exactly as the user typed it
-     * @return the command, or an empty Optional if that command word does not
-     *         have a Command class yet
+     * @return the command the user asked for
+     * @throws CortisolException if the command word is unknown, or its arguments
+     *                           cannot be read
      */
-    public static Optional<Command> parse(String userInput) {
-        switch (parseCommandWord(userInput)) {
+    public static Command parse(String userInput) throws CortisolException {
+        String commandWord = parseCommandWord(userInput);
+        String arguments = parseArguments(userInput);
+
+        switch (commandWord) {
         case "list":
-            return Optional.of(new ListCommand());
+            return new ListCommand();
+        case "todo":
+            return new AddCommand(parseTodo(arguments));
+        case "deadline":
+            return new AddCommand(parseDeadline(arguments));
+        case "event":
+            return new AddCommand(parseEvent(arguments));
+        case "mark":
+            return new MarkCommand(parseTaskNumber(arguments, "mark"));
+        case "unmark":
+            return new UnmarkCommand(parseTaskNumber(arguments, "unmark"));
+        case "delete":
+            return new DeleteCommand(parseTaskNumber(arguments, "delete"));
         case "bye":
-            return Optional.of(new ExitCommand());
+            return new ExitCommand();
         default:
-            return Optional.empty();
+            throw new CortisolException("I do beg your pardon, sir/madam, but that "
+                    + "instruction is not in my repertoire.\n"
+                    + " I can manage: todo, deadline, event, list, mark, unmark, "
+                    + "delete, bye.");
         }
     }
 
