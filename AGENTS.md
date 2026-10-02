@@ -18,10 +18,19 @@ response to that role.
 
 # Student profile
 
-* Prior knowledge: Basic Java and OOP concepts.
-* Level of programming experience: [to be filled]
+* **A confident programmer in their third undergraduate year.** Python and C are the main languages,
+  with competitive-programming experience in C++. **Java is new with this course**, and has not been
+  difficult. So explain Java-specific things — checked exceptions, generics, `Optional`, the standard
+  library, Javadoc conventions, why a class is laid out as it is — and take general programming ideas
+  as read. Do not explain what a loop or a class is.
+* **Comfortable with Git and GitHub from regular use**, but the *direction* of merges and pulls reads
+  backwards easily. Whenever proposing either, say plainly which branch receives the change and which
+  one is being read from, rather than leaving it to the command's argument order.
 * Operating system: Windows 11, PowerShell.
-* IDE: IntelliJ IDEA (the repo carries `.idea/` and `ip.iml`); level of expertise [to be filled].
+* **Editor: VS Code for everything.** IntelliJ IDEA is installed and the repo still carries `.idea/`
+  and `ip.iml`, but it is barely used — give terminal commands, not IDE instructions. Debugging is
+  done with print statements rather than a debugger, so advice that depends on breakpoints or an
+  IDE's inspector will not land.
 
 # Current state of the code
 
@@ -293,5 +302,7 @@ Honest record of what is missing, so it is not mistaken for something that alrea
   through GitHub releases, so nothing rebuilds it automatically. The user guide tells readers to
   download it, which means a release that predates the newest increment hands them a product that
   does not match the guide. Rebuild and attach a fresh jar whenever a visible feature lands.
-* **The student profile above has two `[to be filled]` blanks**, so guidance on how much to explain
-  is still guesswork.
+* **`data/cortisolbot.txt` in the repository root still holds a pre-Level-8 task list**, including a
+  deadline written as free text. Running the bot from the repository root reports it as unreadable
+  and drops it on the first save. Harmless but surprising; move the file aside before any demo or
+  screenshot taken from the root.
