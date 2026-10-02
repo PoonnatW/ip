@@ -4,8 +4,7 @@ CortisolBot is a task tracker for your terminal, with the manners of a very expe
 keeps your todos, deadlines and events, remembers them between sessions, and declines to panic on
 your behalf.
 
-<!-- Add a terminal screenshot here as docs/Ui.png, then replace this comment with:
-     ![CortisolBot in a terminal](Ui.png) -->
+![CortisolBot in a terminal](Ui.png)
 
 ```
   ____           _   _           _ ____        _
