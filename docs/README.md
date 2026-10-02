@@ -206,9 +206,9 @@ is set aside rather than discarded, and it will tell you how many it skipped:
 
 - **Only deadlines take real dates.** An event's start and end are kept as text, so they are not
   checked and cannot be sorted or searched by date.
-- **A `|` in a description does not survive a restart.** CortisolBot uses `|` to separate fields in
-  its save file, so `todo read | book` comes back as `read` the next time you start it. Avoid the
-  character until this is fixed.
+- **A task cannot contain `|`.** CortisolBot divides the fields of its save file with `|`, so it
+  politely declines any description, start or end containing one rather than saving something it
+  could not read back.
 - **`find` searches descriptions only**, not dates. `find 2019` finds nothing.
 - **There is no undo.** `delete` is final, though an accidental `mark` is easily put right with
   `unmark`.

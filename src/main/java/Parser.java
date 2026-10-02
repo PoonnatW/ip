@@ -12,6 +12,12 @@
  */
 public class Parser {
 
+    /**
+     * The character {@link Storage} divides a task's fields with, and which a
+     * task's own text therefore may not contain.
+     */
+    private static final String FIELD_SEPARATOR = "|";
+
     /** Prevents instantiation: this class is a collection of functions. */
     private Parser() {
     }
@@ -131,6 +137,26 @@ public class Parser {
     }
 
     /**
+     * Refuses text that contains the separator the data file is built around.
+     * <p>
+     * {@link Storage} writes a task as fields divided by "|", and does not
+     * escape a "|" that appears inside one of them, so such a task would come
+     * back truncated on the next run. Refusing it as it is typed keeps the file
+     * honest, and tells the user at the moment they can still do something
+     * about it.
+     *
+     * @param text one field of a task, as the user typed it.
+     * @throws CortisolException if the text contains the separator.
+     */
+    private static void refuseSeparator(String text) throws CortisolException {
+        if (text.contains(FIELD_SEPARATOR)) {
+            throw new CortisolException("A task may not contain '" + FIELD_SEPARATOR
+                    + "', sir/madam. I use it to rule the columns of my ledger.\n"
+                    + " Do try the same instruction without it.");
+        }
+    }
+
+    /**
      * Builds a todo from the text following the "todo" command word.
      *
      * @param arguments text following the command word.
@@ -142,6 +168,7 @@ public class Parser {
             throw new CortisolException("A todo without a description is rather like tea "
                     + "without leaves, sir/madam.\n Do try: todo <description>");
         }
+        refuseSeparator(arguments);
 
         return new ToDo(arguments);
     }
@@ -168,6 +195,7 @@ public class Parser {
             throw new CortisolException("A deadline is of little use without a date, sir/madam.\n"
                     + " Do try: deadline <description> /by 2019-12-02");
         }
+        refuseSeparator(description);
 
         return new Deadline(description, TaskDateTime.parse(deadline));
     }
@@ -196,6 +224,11 @@ public class Parser {
             throw new CortisolException("An event requires both a start and an end, sir/madam.\n"
                     + " Do try: event <description> /from <start> /to <end>");
         }
+        // An event's start and end are stored as fields of their own, so they
+        // are as unable to carry the separator as the description is.
+        refuseSeparator(description);
+        refuseSeparator(startTime);
+        refuseSeparator(endTime);
 
         return new Event(description, startTime, endTime);
     }

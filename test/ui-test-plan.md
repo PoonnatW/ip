@@ -31,11 +31,11 @@ Rules for writing a test case:
 This is current behaviour, deliberately captured so that the day it is changed, the test session
 fails and this plan must be updated to match. It is **not** an endorsement.
 
-1. A description containing the data file's own separator, `|`, is saved faithfully but comes back
-   truncated at the separator on the next run, silently losing everything after it. TC-17 records the
-   saving, TC-18 records the loss. This is a genuine defect rather than a cosmetic one, and the fix
-   (escaping the separator, or splitting with a limit) belongs in whichever increment touches
-   `Storage` next.
+1. A data file edited by hand can still carry the separator, `|`, inside a field, and such a line
+   comes back truncated at the separator rather than being reported as unreadable. Typing one in is
+   now refused outright (TC-17), so this is reachable only by editing `data/cortisolbot.txt`
+   directly; TC-18 records what happens when someone does. Escaping the separator as it is written
+   would close it properly, and belongs in whichever increment touches `Storage` next.
 
 When it is fixed, update the affected expected output here in the same commit as the code change.
 
@@ -799,15 +799,19 @@ T | 0 | deadline the report /by tomorrow
 D | 0 | submit form | 2019-12-02
 ```
 
-## TC-17 Saving a description that contains the file separator
+## TC-17 Text containing the file separator
 
-**Aim:** Check that a `|` typed in a description is kept on screen and written to the data file. What
-happens when that file is read back again is TC-18.
+**Aim:** Check that a `|` is refused wherever it would become a stored field -- a description, and an
+event's start or end -- because the data file divides fields with `|` and cannot carry one inside
+them. A valid deadline between the two refusals, and the `list` at the end, prove that only the
+offending commands were turned away.
 
 ### Input
 
 ```text
 todo read | book
+deadline submit form /by 2019-12-02
+event meeting /from 2pm /to 4 | pm
 list
 bye
 ```
@@ -817,13 +821,21 @@ bye
 ```text
 {{greeting}}
 -------------------------------------------------------
+ A task may not contain '|', sir/madam. I use it to rule the columns of my ledger.
+ Do try the same instruction without it.
+-------------------------------------------------------
+-------------------------------------------------------
 Very good, sir/madam. I have added the following:
-	[T][ ] read | book
+	[D][ ] submit form (by: Dec 02 2019)
  That makes 1 in your keeping.
 -------------------------------------------------------
 -------------------------------------------------------
+ A task may not contain '|', sir/madam. I use it to rule the columns of my ledger.
+ Do try the same instruction without it.
+-------------------------------------------------------
+-------------------------------------------------------
 Your tasks, sir/madam, as they presently stand:
-	1.[T][ ] read | book
+	1.[D][ ] submit form (by: Dec 02 2019)
 -------------------------------------------------------
 {{farewell}}
 ```
@@ -831,14 +843,15 @@ Your tasks, sir/madam, as they presently stand:
 ### Expected data file
 
 ```text
-T | 0 | read | book
+D | 0 | submit form | 2019-12-02
 ```
 
 ## TC-18 Reading back a description that contains the file separator
 
-**Aim:** Record what currently happens to the file TC-17 wrote: the description is truncated at the
-`|` and everything after it is lost without a word of warning. This is known deviation 3, and this
-test case is expected to fail on the day it is fixed.
+**Aim:** Record what happens to a data file that contains the separator inside a field. Since TC-17,
+the bot refuses to write such a line itself, so this can only arise from editing
+`data/cortisolbot.txt` by hand -- but when it does, the description is truncated at the `|` and
+everything after it is lost without a word of warning.
 
 ### Data file
 
