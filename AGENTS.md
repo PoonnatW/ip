@@ -63,6 +63,9 @@ A deadline's `/by` must be a real date — `2019-12-02`, or `2019-12-02 1800` wh
 and anything else is refused. An event's `/from` and `/to` are still free text, and become dates in
 some later increment.
 
+No part of a task may contain `|`, since that is what `Storage` divides its fields with. `Parser`
+refuses it as the task is typed rather than letting the file take something it could not read back.
+
 Tests live in `test/`:
 
 | File | Role |
@@ -294,10 +297,11 @@ Honest record of what is missing, so it is not mistaken for something that alrea
 * **`.gitignore` still mentions `text-ui-test/`**, which is the course template's harness layout. This
   repository never rebuilt that folder and uses `test/` instead; the stale lines are harmless and have
   been left alone.
-* **A `|` in a description corrupts the task when it is reloaded.** `Storage` separates fields with
-  `|` and does not escape it, so `todo read | book` saves correctly but comes back as `read` on the
-  next run, silently losing the rest. Recorded by TC-17 and TC-18 in the test plan; to be fixed in
-  whichever increment next touches `Storage`.
+* **`Storage` still does not escape its field separator.** Typing a `|` into a task is refused by
+  `Parser` (TC-17), so the file can no longer be corrupted through the UI — but a file edited by hand
+  can still carry one inside a field, and comes back truncated rather than reported as unreadable
+  (TC-18). Escaping on write would close it properly, and belongs in whichever increment next touches
+  `Storage`.
 * **The released jar can fall behind the code.** `CortisolBot.jar` is gitignored and distributed
   through GitHub releases, so nothing rebuilds it automatically. The user guide tells readers to
   download it, which means a release that predates the newest increment hands them a product that
