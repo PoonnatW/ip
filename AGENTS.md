@@ -2,8 +2,9 @@
 
 This repository holds **CortisolBot**, a command-line task-tracking chatbot written in Java. It
 began as the starter template for an introductory software engineering course and is being built up
-by the student who owns the repo, one graded increment at a time (`Level-0` … `Level-7`, then
-`A-Classes`, `A-CodingStandard`, `A-CodeQuality`, `A-Jar`, and so on).
+by the student who owns the repo, one graded increment at a time. `Level-0` through `Level-9` are
+done, as are `A-Classes`, `A-CodingStandard`, `A-CodeQuality`, `A-Jar`, `A-MoreOOP`, `A-JavaDoc` and
+`A-UserGuide`; each is merged into `master` and tagged. Later increments carry on from there.
 
 The work is deliberately incremental: each increment is a small, self-contained improvement that is
 committed, tagged, and pushed before the next one begins. Prefer the smallest change that completes
@@ -30,14 +31,15 @@ root, since tools such as Gradle expect it there.
 | File | Role |
 |---|---|
 | `CortisolBot.java` | Entry point. Holds the Ui, Storage and TaskList, and runs the read-and-execute loop. |
-| `Parser.java` | Turns a typed line into a `Command`. Reads command words, task numbers, and the `/by` `/from` `/to` markers. Static methods only. |
+| `Parser.java` | Turns a typed line into a `Command`. Reads command words, task numbers, search keywords, and the `/by` `/from` `/to` markers. Static methods only. |
 | `Command.java` | Abstract base: `execute(TaskList, Ui, Storage)` and `isExit()`. |
-| `AddCommand.java`, `MarkCommand.java`, `UnmarkCommand.java`, `DeleteCommand.java`, `ListCommand.java`, `ExitCommand.java` | One class per instruction. Each command that alters the list saves it itself. |
+| `AddCommand.java`, `MarkCommand.java`, `UnmarkCommand.java`, `DeleteCommand.java`, `FindCommand.java`, `ListCommand.java`, `ExitCommand.java` | One class per instruction. Each command that alters the list saves it itself; `find` and `list` do not, since they change nothing. |
 | `Ui.java` | Every read from the keyboard and every write to the screen, including the banner and the separator. |
 | `TaskList.java` | The tasks, and the only place that maps a task number the user typed onto a position in the list. |
 | `Storage.java` | Loads and saves the task list at `data/cortisolbot.txt`. Throws `CortisolException` rather than printing. |
-| `Task.java` | Base task: description, done-status, file encoding. |
+| `Task.java` | Base task: description, done-status, file encoding, keyword matching. |
 | `ToDo.java`, `Deadline.java`, `Event.java` | The three task types. |
+| `TaskDateTime.java` | A deadline's date, with an optional hour. Owns all three date formats: the one typed, the one displayed, and the one stored. |
 | `CortisolException.java` | Errors whose messages are already phrased for the user. |
 
 Two invariants came out of the `A-MoreOOP` increment and are worth preserving:
@@ -45,8 +47,12 @@ Two invariants came out of the `A-MoreOOP` increment and are worth preserving:
 * **Nothing outside `Ui` touches `System.out` or `Scanner`.** A grep for either outside that file should come back empty.
 * **Nothing outside `TaskList` converts a task number into a list index.** The off-by-one lives in one place.
 
-Supported commands: `list`, `todo`, `deadline … /by …`, `event … /from … /to …`, `mark`, `unmark`,
-`delete`, `bye`.
+Supported commands: `list`, `find …`, `todo …`, `deadline … /by …`, `event … /from … /to …`, `mark`,
+`unmark`, `delete`, `bye`.
+
+A deadline's `/by` must be a real date — `2019-12-02`, or `2019-12-02 1800` when the hour matters —
+and anything else is refused. An event's `/from` and `/to` are still free text, and become dates in
+some later increment.
 
 Tests live in `test/`:
 
@@ -54,6 +60,19 @@ Tests live in `test/`:
 |---|---|
 | `test/ui-test-plan.md` | The test cases: for each, its aim, the lines typed, and the output expected. |
 | `test/run-ui-tests.py` | Runs the plan. Standard library only; no packages to install. |
+
+The product website lives in `docs/`, published by GitHub Pages at
+https://PoonnatW.github.io/ip/ from `master` and the `/docs` folder:
+
+| File | Role |
+|---|---|
+| `docs/README.md` | The user guide, and the page GitHub Pages serves as the site index. |
+| `docs/Ui.png` | Terminal screenshot shown at the top of the guide. |
+| `docs/_config.yml` | Jekyll settings: the site's title, tagline and theme. |
+
+Every command and message quoted in the user guide was copied from a real session rather than
+written from memory. When a user-facing string changes, the guide needs the same pass as the test
+plan.
 
 # Project-specific requirements
 
@@ -71,6 +90,15 @@ There is no build tool in this repository — no `build.gradle`, no Maven. Compi
 javac -d bin src/main/java/*.java
 java -cp bin CortisolBot
 ```
+
+To build the jar that the GitHub release distributes:
+
+```powershell
+javac -encoding UTF-8 -d bin src/main/java/*.java
+jar --create --file CortisolBot.jar --main-class CortisolBot -C bin .
+```
+
+`--main-class` is what lets a reader run `java -jar CortisolBot.jar` without naming the class.
 
 `bin/`, `out/`, `data/`, and `*.jar` are all gitignored, so build output and the user's saved task
 list never enter a commit. An unmerged `origin/add-gradle-support` branch exists if a build tool is
@@ -132,7 +160,8 @@ Rules for any string the user can see:
   correctly — `That makes 1 in your keeping`, `I have retrieved 1 of your tasks` — rather than
   adding pluralization logic or an `(s)`.
 * Errors explain the misunderstanding in character, then offer the correct form, e.g.
-  `Do try: deadline <description> /by <when>`.
+  `Do try: deadline <description> /by 2019-12-02`. Where a format is strict, show a real example
+  rather than a placeholder — `<when>` would promise a flexibility the parser does not have.
 * **Never ship the stock wordings from the course's starter material** — `"Got it. I've added this
   task:"`, `"Nice!"`, `"OK, I've marked this task as not done yet:"`, `"Noted. I've removed this
   task:"`, `"Here are the tasks in your list:"`. Rewrite them in the butler voice.
@@ -249,7 +278,7 @@ code change that has not been through `test-ui` is not ready to be committed.
 Honest record of what is missing, so it is not mistaken for something that already works:
 
 * **No unit tests.** Every class is exercised only from the outside, through the text-UI test session
-  in `test/ui-test-plan.md` (22 test cases, run by the `test-ui` skill). That session covers the
+  in `test/ui-test-plan.md` (27 test cases, run by the `test-ui` skill). That session covers the
   commands, the error messages and the data file, but it cannot reach a method that no command calls,
   and it says nothing about how the code is arranged inside. JUnit is the course's answer and has not
   been introduced yet.
@@ -260,7 +289,9 @@ Honest record of what is missing, so it is not mistaken for something that alrea
   `|` and does not escape it, so `todo read | book` saves correctly but comes back as `read` on the
   next run, silently losing the rest. Recorded by TC-17 and TC-18 in the test plan; to be fixed in
   whichever increment next touches `Storage`.
-* **`docs/README.md` is still the unedited template** — placeholder headings, no screenshot, no
-  product intro.
+* **The released jar can fall behind the code.** `CortisolBot.jar` is gitignored and distributed
+  through GitHub releases, so nothing rebuilds it automatically. The user guide tells readers to
+  download it, which means a release that predates the newest increment hands them a product that
+  does not match the guide. Rebuild and attach a fresh jar whenever a visible feature lands.
 * **The student profile above has two `[to be filled]` blanks**, so guidance on how much to explain
   is still guesswork.
