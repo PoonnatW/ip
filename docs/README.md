@@ -6,18 +6,6 @@ your behalf.
 
 ![CortisolBot in a terminal](Ui.png)
 
-```
-  ____           _   _           _ ____        _
- / ___|___  _ __| |_(_)___  ___ | | __ )  ___ | |_
-| |   / _ \| '__| __| / __|/ _ \| |  _ \ / _ \| __|
-| |__| (_) | |  | |_| \__ \ (_) | | |_) | (_) | |_
- \____\___/|_|   \__|_|___/\___/|_|____/ \___/ \__|
--------------------------------------------------------
-Greetings sir/madam, CortisolBot humbly at your service.
-How may I serve you this evening?
--------------------------------------------------------
-```
-
 ## Quick start
 
 1. Make sure you have **Java 25** or later. Check with `java -version`.
